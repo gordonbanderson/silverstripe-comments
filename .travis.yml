@@ -1,18 +1,17 @@
-# See https://github.com/silverstripe-labs/silverstripe-travis-support for setup details
+language: php
 
 sudo: false
 
-language: php
-
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
+addons:
+  apt:
+    packages:
+      - tidy
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.2
+  global:
+    - DB=MYSQL CORE_RELEASE=3.1
+    - MODULE_PATH=comments
+
 
 matrix:
   include:
@@ -25,12 +24,25 @@ matrix:
   allow_failures:
     - php: 7.0
 
+
+
 before_script:
+  - phpenv rehash
   - composer self-update || true
   - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
   - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
   - cd ~/builds/ss
-  - composer install
+  - composer require satooshi/php-coveralls
 
 script:
-  - vendor/bin/phpunit comments/tests
+  - vendor/bin/phpunit --coverage-clover=coverage.clover -c $MODULE_PATH/phpunit.xml $MODULE_PATH/tests/
+
+after_success:
+    - cp coverage.clover ~/coverage.xml
+    - mkdir -p build/logs
+    - travis_retry php vendor/bin/coveralls -v --coverage_clover coverage.clover
+    - mv coverage.clover ~/build/$TRAVIS_REPO_SLUG/
+    - cd ~/build/$TRAVIS_REPO_SLUG
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
