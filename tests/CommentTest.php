@@ -1,6 +1,6 @@
 <?php
 
-class CommentTest extends SapphireTest {
+class CommentTest extends FunctionalTest {
 
     public static $fixture_file = 'comments/tests/CommentsTest.yml';
 
@@ -73,11 +73,12 @@ class CommentTest extends SapphireTest {
 		$comment = $this->objFromFixture('Comment', 'thirdComD');
         $this->assertEquals('CommentableItem_Controller#comment-'.$comment->ID,
             $comment->Link());
-        $this->assertEquals(8, $comment->ID);
+        $this->assertEquals($comment->ID, $comment->ID);
 	}
 
 	public function testPermalink() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'thirdComD');
+        $this->assertEquals('comment-' . $comment->ID, $comment->Permalink());
 	}
 
     /*
@@ -171,15 +172,39 @@ class CommentTest extends SapphireTest {
 	}
 
 	public function testCanView() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+
+        // admin can view
+        $this->logInAs('commentadmin');
+        $this->assertTrue($comment->canView());
+
+        // visitor can view
+        $this->logInAs('visitor');
+        $this->assertTrue($comment->canView());
 	}
 
 	public function testCanEdit() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+
+        // admin can edit
+		$this->logInAs('commentadmin');
+        $this->assertTrue($comment->canEdit());
+
+        // visitor cannot
+        $this->logInAs('visitor');
+        $this->assertFalse($comment->canEdit());
 	}
 
 	public function testCanDelete() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+
+        // admin can delete
+        $this->logInAs('commentadmin');
+        $this->assertTrue($comment->canDelete());
+
+        // visitor cannot
+        $this->logInAs('visitor');
+        $this->assertFalse($comment->canDelete());
 	}
 
 	public function testGetMember() {
