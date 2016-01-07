@@ -55,12 +55,22 @@ class CommentListTest extends FunctionalTest {
         // As a comment has been added, there should be 2 comments now
         $this->assertEquals(2, $item->Comments()->count());
 
+        $newComment2 = new Comment();
+        $newComment2->Name = 'John Smith';
+        $newComment2->Comment = 'This is another test comment';
+        $newComment2->write();
+        $comments->add($newComment2);
+
         // Check the order by testing the actual comments themselves
         $actualComments = array();
         foreach ($comments as $comment) {
             array_push($actualComments, $comment->Comment);
         }
-        $expected = array('textFA', $newComment->Comment);
+        $expected = array(
+            'textFA',
+            $newComment->Comment,
+            $newComment2->Comment
+        );
         $this->assertEquals($expected, $actualComments);
 	}
 
