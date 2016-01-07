@@ -71,7 +71,8 @@ class CommentTest extends SapphireTest {
 
 	public function testLink() {
 		$comment = $this->objFromFixture('Comment', 'thirdComD');
-        $this->assertEquals('CommentableItem_Controller#comment-8', $comment->Link());
+        $this->assertEquals('CommentableItem_Controller#comment-'.$comment->ID,
+            $comment->Link());
         $this->assertEquals(8, $comment->ID);
 	}
 
@@ -79,9 +80,11 @@ class CommentTest extends SapphireTest {
 		$this->markTestSkipped('TODO');
 	}
 
+    /*
+    Test field labels in 2 languages
+     */
 	public function testFieldLabels() {
         $locale = i18n::get_locale();
-        error_log('LOCALE:'.$locale);
 		i18n::set_locale('fr');
         $comment = $this->objFromFixture('Comment', 'firstComA');
         $labels = $comment->FieldLabels();
@@ -133,15 +136,22 @@ class CommentTest extends SapphireTest {
 	}
 
 	public function testGetParent() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $item = $this->objFromFixture('CommentableItem', 'first');
+        $parent = $comment->getParent();
+        $this->assertEquals($item, $parent);
 	}
 
 	public function testGetParentTitle() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $title = $comment->getParentTitle();
+		$this->assertEquals('First', $title);
 	}
 
 	public function testGetParentClassName() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $className = $comment->getParentClassName();
+        $this->assertEquals('CommentableItem', $className);
 	}
 
 	public function testCastingHelper() {
