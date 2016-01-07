@@ -63,7 +63,7 @@ class CommentListTest extends FunctionalTest {
         }
     }
 
-	public function FIXMEtestAddComment() {
+	public function testAddComment() {
 		$item = $this->objFromFixture('CommentableItem', 'first');
         $comments = $item->Comments();
         $this->assertEquals(1, $comments->count());
