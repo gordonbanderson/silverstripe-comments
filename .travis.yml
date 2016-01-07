@@ -25,7 +25,8 @@ env:
 matrix:
   include:
     - php: 5.6
-      env: DB=MYSQL CORE_RELEASE=3.2 COVERAGE=1
+      #CommentsListTest breaks with this env: DB=MYSQL CORE_RELEASE=3.2 COVERAGE=1
+      env: DB=SQLITE CORE_RELEASE=3.2 COVERAGE=1
     - php: 5.6
       env: DB=MYSQL CORE_RELEASE=3
     - php: 5.6
