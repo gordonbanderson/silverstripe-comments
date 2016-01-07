@@ -34,6 +34,12 @@ class CommentTest extends FunctionalTest {
         ));
     }
 
+
+    public function tearDown() {
+        Config::unnest();
+        parent::tearDown();
+    }
+
 	public function testOnBeforeWrite() {
 		$this->markTestSkipped('TODO');
 	}
@@ -62,7 +68,10 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testGetSecurityToken() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $token = $comment->getSecurityToken();
+        error_log(print_r($token,1));
+        $this->assertEquals(null, $token);
 	}
 
 	public function testRequireDefaultRecords() {
@@ -256,7 +265,21 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testGetCMSFields() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $fields = $comment->getCMSFields();
+        $names = array();
+        foreach ($fields as $field) {
+            $names[] = $field->getName();
+        }
+        $expected = array(
+            'Created',
+            'Name',
+            'Comment',
+            'Email',
+            'URL',
+            null #FIXME this is suspicious
+        );
+        $this->assertEquals($expected, $names);
 	}
 
 	public function testPurifyHtml() {
@@ -268,7 +291,28 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testGravatar() {
-		$this->markTestSkipped('TODO');
+        // Turn gravatars on
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'use_gravatar' => true
+        ));
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+
+        $this->assertEquals(
+            'http://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e?s'.
+            '=80&d=identicon&r=g',
+            $comment->gravatar()
+        );
+
+        // Turn gravatars off
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'use_gravatar' => false
+        ));
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+
+        $this->assertEquals(
+            '',
+            $comment->gravatar()
+        );
 	}
 
 	public function testGetRepliesEnabled() {
