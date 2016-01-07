@@ -222,9 +222,6 @@ class CommentTest extends FunctionalTest {
         $this->assertFalse($comment->canDelete());
 	}
 
-
-
-
 	public function testGetMember() {
         $this->logInAs('visitor');
 		$current = Member::currentUser();
@@ -245,7 +242,11 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testGetAuthorName() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $this->assertEquals(
+            'FA',
+            $comment->getAuthorName()
+        );
 	}
 
 
@@ -285,48 +286,45 @@ class CommentTest extends FunctionalTest {
         );
     }
 
-	public function testActionLink() {
-		$this->markTestSkipped('TODO');
-	}
-
-	public function testDeleteLink() {
-		$this->markTestSkipped('TODO');
-	}
-
-	public function testSpamLink() {
-		$this->markTestSkipped('TODO');
-	}
-
-	public function testHamLink() {
-		$this->markTestSkipped('TODO');
-	}
-
-	public function testApproveLink() {
-		$this->markTestSkipped('TODO');
-	}
-
 	public function testMarkSpam() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markSpam();
+        $this->assertTrue($comment->Moderated);
+        $this->assertTrue($comment->IsSpam);
 	}
 
 	public function testMarkApproved() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markApproved();
+        $this->assertTrue($comment->Moderated);
+        $this->assertFalse($comment->IsSpam);
 	}
 
 	public function testMarkUnapproved() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markApproved();
+        $this->assertFalse($comment->Moderated);
 	}
 
 	public function testSpamClass() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $this->assertEquals('notspam', $comment->spamClass());
+        $comment->Moderated = false;
+        $this->assertEquals('unmoderated', $comment->spamClass());
+        $comment->IsSpam = true;
+        $this->assertEquals('spam', $comment->spamClass());
 	}
 
 	public function testGetTitle() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+		$this->assertEquals(
+            'Comment by FA on First',
+            $comment->getTitle()
+        );
 	}
 
 	public function testGetCMSFields() {
-		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
         $fields = $comment->getCMSFields();
         $names = array();
         foreach ($fields as $field) {
@@ -341,11 +339,68 @@ class CommentTest extends FunctionalTest {
             null #FIXME this is suspicious
         );
         $this->assertEquals($expected, $names);
-	}
+    }
 
+    public function testGetCMSFieldsCommentHasAuthor() {
+        $member = Member::get()->filter('FirstName', 'visitor')->first();
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->AuthorID = $member->ID;
+        $comment->write();
+
+        $fields = $comment->getCMSFields();
+        $names = array();
+        foreach ($fields as $field) {
+            $names[] = $field->getName();
+        }
+        $expected = array(
+            'Created',
+            'Name',
+            'AuthorMember',
+            'Comment',
+            'Email',
+            'URL',
+            null #FIXME this is suspicious
+        );
+        $this->assertEquals($expected, $names);
+    }
+
+    public function testGetCMSFieldsWithParentComment() {
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+
+        $child = new Comment();
+        $child->Name = 'John Smith';
+        $child->Comment = 'This is yet another test commnent';
+        $child->ParentCommentID = $comment->ID;
+        $child->write();
+
+        $fields = $child->getCMSFields();
+        $names = array();
+        foreach ($fields as $field) {
+            $names[] = $field->getName();
+        }
+        $expected = array(
+            'Created',
+            'Name',
+            'AuthorMember',
+            'Comment',
+            'Email',
+            'URL',
+            null #FIXME this is suspicious
+        );
+        $this->assertEquals($expected, $names);
+    }
+
+/*
 	public function testPurifyHtml() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+
+		$dirtyHTML = '<p><script>alert("w00t")</script>my comment</p>';
+        $this->assertEquals(
+            '',
+            $comment->purifyHtml($dirtyHTML)
+        );
 	}
+*/
 
 	public function testGetHtmlPurifierService() {
 		$this->markTestSkipped('TODO');
