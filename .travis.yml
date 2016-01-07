@@ -54,4 +54,4 @@ after_success:
     - "if [ \"$COVERAGE\" = \"1\" ]; then mv coverage.clover ~/build/$TRAVIS_REPO_SLUG/; fi"
     - cd ~/build/$TRAVIS_REPO_SLUG
     - wget https://scrutinizer-ci.com/ocular.phar
-    - "if [ \"$COVERAGE\" = \"1\" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover && codecov; fi"
+    - "if [ \"$COVERAGE\" = \"1\" ]; then travis_retry codecov && travis_retry php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi"
