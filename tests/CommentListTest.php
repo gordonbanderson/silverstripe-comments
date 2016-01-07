@@ -34,6 +34,11 @@ class CommentListTest extends FunctionalTest {
         ));
     }
 
+    public function tearDown() {
+        Config::unnest();
+        parent::tearDown();
+    }
+
 	public function testGetForeignClass() {
         $item = $this->objFromFixture('CommentableItem', 'first');
 
@@ -41,6 +46,22 @@ class CommentListTest extends FunctionalTest {
         $this->assertEquals('CommentableItem',
                                 $item->Comments()->getForeignClass());
 	}
+
+    public function testAddNonComment() {
+        $item = $this->objFromFixture('CommentableItem', 'first');
+        $comments = $item->Comments();
+        $this->assertEquals(1, $comments->count());
+        $member = Member::get()->first();
+        try {
+            $comments->add($member);
+            $this->fail('Should not have been able to add member to comments');
+        } catch (InvalidArgumentException $e) {
+            $this->assertEquals(
+                'CommentList::add() expecting a Comment object, or ID value',
+                $e->getMessage()
+            );
+        }
+    }
 
 	public function FIXMEtestAddComment() {
 		$item = $this->objFromFixture('CommentableItem', 'first');
@@ -75,7 +96,7 @@ class CommentListTest extends FunctionalTest {
 	}
 
 	public function testRemoveComment() {
-		$item = $this->objFromFixture('CommentableItem', 'first');
+        $item = $this->objFromFixture('CommentableItem', 'first');
         $this->assertEquals(1, $item->Comments()->count());
         $comments = $item->Comments();
         $comment = $comments->first();
@@ -83,6 +104,27 @@ class CommentListTest extends FunctionalTest {
 
         // 1-1 = 0
         $this->assertEquals(0, $item->Comments()->count());
-	}
+    }
+
+    public function testRemoveNonComment() {
+        $item = $this->objFromFixture('CommentableItem', 'first');
+        $this->assertEquals(1, $item->Comments()->count());
+        $comments = $item->Comments();
+
+        // try and remove a non comment
+        $member = Member::get()->first();
+
+
+
+        try {
+            $comments->remove($member);
+            $this->fail('Should not have been able to remove member from comments');
+        } catch (InvalidArgumentException $e) {
+            $this->assertEquals(
+                'CommentList::remove() expecting a Comment object, or ID',
+                $e->getMessage()
+            );
+        }
+    }
 
 }
