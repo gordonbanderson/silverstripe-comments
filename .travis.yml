@@ -1,21 +1,31 @@
-# See https://github.com/silverstripe-labs/silverstripe-travis-support for setup details
-
-sudo: false
-
 language: php
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
+sudo: true
+
+addons:
+  apt:
+    packages:
+      - tidy
+
+before_install:
+  - pip install --user codecov
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.2
+  global:
+    - DB=MYSQL CORE_RELEASE=3.1
+    - MODULE_PATH=comments
+
+    # Set to 1 in the matrix to enable code coverage
+    - COVERAGE=0
+
+    # Set to 1 in the matrix to install htmlpurifier
+    - PURIFIER=0
+
 
 matrix:
   include:
+    - php: 5.6
+      env: DB=MYSQL CORE_RELEASE=3.2 COVERAGE=1
     - php: 5.6
       env: DB=MYSQL CORE_RELEASE=3
     - php: 5.6
@@ -26,11 +36,21 @@ matrix:
     - php: 7.0
 
 before_script:
+  - phpenv rehash
   - composer self-update || true
   - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
   - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
   - cd ~/builds/ss
-  - composer install
 
 script:
-  - vendor/bin/phpunit comments/tests
+  # Execute tests with no coverage.  This is the fastest option
+  - "if [ \"$COVERAGE\" = \"0\" ]; then vendor/bin/phpunit $MODULE_PATH/tests/; fi"
+
+  # Execute tests with coverage.  Do this for a small
+  - "if [ \"$COVERAGE\" = \"1\" ]; then vendor/bin/phpunit --coverage-clover=coverage.clover $MODULE_PATH/tests/; fi"
+
+after_success:
+    - "if [ \"$COVERAGE\" = \"1\" ]; then mv coverage.clover ~/build/$TRAVIS_REPO_SLUG/; fi"
+    - cd ~/build/$TRAVIS_REPO_SLUG
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - "if [ \"$COVERAGE\" = \"1\" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover && codecov; fi"
