@@ -67,13 +67,6 @@ class CommentTest extends FunctionalTest {
         $this->assertFalse(DataObject::get_by_id('Comment', $childCommentID));
 	}
 
-	public function testGetSecurityToken() {
-		$comment = $this->objFromFixture('Comment', 'firstComA');
-        $token = $comment->getSecurityToken();
-        error_log(print_r($token,1));
-        $this->assertEquals(null, $token);
-	}
-
 	public function testRequireDefaultRecords() {
 		$this->markTestSkipped('TODO');
 	}
@@ -173,11 +166,24 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testIsPreview() {
-		$this->markTestSkipped('TODO');
+		$comment = new Comment();
+        $comment->Name = 'Fred Bloggs';
+        $comment->Comment = 'this is a test comment';
+        $this->assertTrue($comment->isPreview());
+        $comment->write();
+        $this->assertFalse($comment->isPreview());
 	}
 
 	public function testCanCreate() {
-		$this->markTestSkipped('TODO');
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+
+        // admin can create - this is always false
+        $this->logInAs('commentadmin');
+        $this->assertFalse($comment->canCreate());
+
+        // visitor can view
+        $this->logInAs('visitor');
+        $this->assertFalse($comment->canCreate());
 	}
 
 	public function testCanView() {
@@ -216,13 +222,68 @@ class CommentTest extends FunctionalTest {
         $this->assertFalse($comment->canDelete());
 	}
 
+
+
+
 	public function testGetMember() {
-		$this->markTestSkipped('TODO');
+        $this->logInAs('visitor');
+		$current = Member::currentUser();
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $method = $this->getMethod('getMember');
+
+        // null case
+        $member = $method->invokeArgs($comment, array());
+        $this->assertEquals($current, $member);
+
+        // numeric ID case
+        $member = $method->invokeArgs($comment, array($current->ID));
+        $this->assertEquals($current, $member);
+
+        // identity case
+        $member = $method->invokeArgs($comment, array($current));
+        $this->assertEquals($current, $member);
 	}
 
 	public function testGetAuthorName() {
 		$this->markTestSkipped('TODO');
 	}
+
+
+    public function testLinks() {
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $this->logInAs('commentadmin');
+
+        $method = $this->getMethod('ActionLink');
+
+        // test with starts of strings and tokens and salts change each time
+        $this->assertStringStartsWith(
+            '/CommentingController/theaction/'.$comment->ID,
+            $method->invokeArgs($comment, array('theaction'))
+        );
+
+        $this->assertStringStartsWith(
+            '/CommentingController/delete/'.$comment->ID,
+            $comment->DeleteLink()
+        );
+
+        $this->assertStringStartsWith(
+            '/CommentingController/spam/'.$comment->ID,
+            $comment->SpamLink()
+        );
+
+        $comment->markSpam();
+        $this->assertStringStartsWith(
+            '/CommentingController/ham/'.$comment->ID,
+            $comment->HamLink()
+        );
+
+        //markApproved
+        $comment->markUnapproved();
+        $this->assertStringStartsWith(
+            '/CommentingController/approve/'.$comment->ID,
+            $comment->ApproveLink()
+        );
+    }
 
 	public function testActionLink() {
 		$this->markTestSkipped('TODO');
@@ -339,10 +400,6 @@ class CommentTest extends FunctionalTest {
 		$this->markTestSkipped('TODO');
 	}
 
-	public function test__construct() {
-		$this->markTestSkipped('TODO');
-	}
-
 	public function testGetToken() {
 		$this->markTestSkipped('TODO');
 	}
@@ -362,5 +419,13 @@ class CommentTest extends FunctionalTest {
 	public function testGenerate() {
 		$this->markTestSkipped('TODO');
 	}
+
+
+    protected static function getMethod($name) {
+        $class = new ReflectionClass('Comment');
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method;
+    }
 
 }
