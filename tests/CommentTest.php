@@ -550,7 +550,46 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testReplyForm() {
-		$this->markTestSkipped('TODO');
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => false,
+            'nested_depth' => 4
+        ));
+
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+
+        // No nesting, no reply form
+        $form = $comment->replyForm();
+        $this->assertNull($form);
+
+        // parent item so show form
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4
+        ));
+        $form = $comment->replyForm();
+
+        $names = array();
+        foreach ($form->Fields() as $field) {
+            array_push($names, $field->getName());
+        }
+
+        $this->assertEquals(
+            array(
+                null, #FIXME suspicious
+                'ParentID',
+                'ReturnURL',
+                'ParentCommentID',
+                'BaseClass'
+            ),
+            $names
+        );
+
+        // no parent, no reply form
+
+        $comment->ParentID = 0;
+        $comment->write();
+        $form = $comment->replyForm();
+        $this->assertNull($form);
 	}
 
 	public function testUpdateDepth() {
