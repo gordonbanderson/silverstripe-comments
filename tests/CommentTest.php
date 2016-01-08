@@ -489,11 +489,64 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testReplies() {
-		$this->markTestSkipped('TODO');
+        $this->logInAs('commentadmin');
+		Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4
+        ));
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $this->assertEquals(
+            3,
+            $comment->Replies()->count()
+        );
+
+        // Test that spam comments are not returned
+        $childComment = $comment->Replies()->first();
+        $childComment->IsSpam = 1;
+        $childComment->write();
+        $this->assertEquals(
+            2,
+            $comment->Replies()->count()
+        );
+
+        // Test that unmoderated comments are not returned
+        $childComment = $comment->Replies()->first();
+        $childComment->Moderated = 0;
+        $childComment->write();
+        $this->assertEquals(
+            1,
+            $comment->Replies()->count()
+        );
+
+        // Turn off nesting, empty array should be returned
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => false
+        ));
+
+        $this->assertEquals(
+            0,
+            $comment->Replies()->count()
+        );
 	}
 
 	public function testPagedReplies() {
-		$this->markTestSkipped('TODO');
+		Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4,
+            'comments_per_page' => 2 #Force 2nd page for 3 items
+        ));
+
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $pagedList = $comment->pagedReplies();
+        $this->assertEquals(
+            2,
+            $pagedList->TotalPages()
+        );
+        $this->assertEquals(
+            3,
+            $pagedList->getTotalItems()
+        );
+        //TODO - 2nd page requires controller
 	}
 
 	public function testReplyForm() {
