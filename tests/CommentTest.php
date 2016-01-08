@@ -55,14 +55,14 @@ class CommentTest extends FunctionalTest {
         $child->Comment = 'Child of firstComA';
         $child->write();
         $comment->ChildComments()->add($child);
-        $this->assertEquals(1, $comment->ChildComments()->count());
+        $this->assertEquals(4, $comment->ChildComments()->count());
 
         $commentID = $comment->ID;
         $childCommentID = $child->ID;
 
         $comment->delete();
 
-        // assert that the child comment has been deleted
+        // assert that the new child been deleted
         $this->assertFalse(DataObject::get_by_id('Comment', $commentID));
         $this->assertFalse(DataObject::get_by_id('Comment', $childCommentID));
 	}
@@ -149,6 +149,11 @@ class CommentTest extends FunctionalTest {
         $comment = $this->objFromFixture('Comment', 'firstComA');
         $title = $comment->getParentTitle();
 		$this->assertEquals('First', $title);
+
+        // Title from a comment with no parent is blank
+        $comment->ParentID = 0;
+        $comment->write();
+        $this->assertEquals('', $comment->getParentTitle());
 	}
 
 	public function testGetParentClassName() {
@@ -247,6 +252,13 @@ class CommentTest extends FunctionalTest {
             'FA',
             $comment->getAuthorName()
         );
+
+        $comment->Name = '';
+        $this->assertEquals(
+            '',
+            $comment->getAuthorName()
+        );
+
 	}
 
 
@@ -303,7 +315,7 @@ class CommentTest extends FunctionalTest {
 	public function testMarkUnapproved() {
 		$comment = $this->objFromFixture('Comment', 'firstComA');
         $comment->markApproved();
-        $this->assertFalse($comment->Moderated);
+        $this->assertTrue($comment->Moderated);
 	}
 
 	public function testSpamClass() {
@@ -381,11 +393,14 @@ class CommentTest extends FunctionalTest {
         $expected = array(
             'Created',
             'Name',
-            'AuthorMember',
             'Comment',
             'Email',
             'URL',
-            null #FIXME this is suspicious
+            null, #FIXME this is suspicious
+            'ParentComment_Title',
+            'ParentComment_Created',
+            'ParentComment_AuthorName',
+            'ParentComment_EscapedComment'
         );
         $this->assertEquals($expected, $names);
     }
@@ -432,11 +447,45 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testGetRepliesEnabled() {
-		$this->markTestSkipped('TODO');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+		Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => false
+        ));
+        $this->assertFalse($comment->getRepliesEnabled());
+
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4
+        ));
+        $this->assertTrue($comment->getRepliesEnabled());
+
+        $comment->Depth = 4;
+        $this->assertFalse($comment->getRepliesEnabled());
 	}
 
 	public function testAllReplies() {
-		$this->markTestSkipped('TODO');
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4
+        ));
+		$comment = $this->objFromFixture('Comment', 'firstComA');
+        $this->assertEquals(
+            3,
+            $comment->allReplies()->count()
+        );
+        $child = new Comment();
+        $child->Name = 'Fred Smith';
+        $child->Comment = 'This is a child comment';
+        $child->ParentCommentID = $comment->ID;
+
+        // spam should be returned by this method
+        $child->markSpam();
+        $child->write();
+        $replies = $comment->allReplies();
+        $this->assertEquals(
+            4,
+            $comment->allReplies()->count()
+        );
 	}
 
 	public function testReplies() {
