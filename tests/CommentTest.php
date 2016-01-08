@@ -419,7 +419,7 @@ class CommentTest extends FunctionalTest {
         $this->assertEquals($expected, $names);
     }
 
-
+/*
 	public function testPurifyHtml() {
         $comment = $this->objFromFixture('Comment', 'firstComA');
 
@@ -429,7 +429,7 @@ class CommentTest extends FunctionalTest {
             $comment->purifyHtml($dirtyHTML)
         );
 	}
-
+*/
 
 	public function testGetHtmlPurifierService() {
 		$this->markTestSkipped('TODO');
@@ -500,6 +500,12 @@ class CommentTest extends FunctionalTest {
             4,
             $comment->allReplies()->count()
         );
+
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => false
+        ));
+
+        $this->assertEquals(array(), $comment->allReplies());
 	}
 
 	public function testReplies() {
@@ -561,6 +567,12 @@ class CommentTest extends FunctionalTest {
             $pagedList->getTotalItems()
         );
         //TODO - 2nd page requires controller
+        //
+         Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => false
+        ));
+
+        $this->assertEquals(0, $comment->PagedReplies()->count());
 	}
 
 	public function testReplyForm() {
