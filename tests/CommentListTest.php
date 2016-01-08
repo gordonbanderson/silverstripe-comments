@@ -50,7 +50,7 @@ class CommentListTest extends FunctionalTest {
     public function testAddNonComment() {
         $item = $this->objFromFixture('CommentableItem', 'first');
         $comments = $item->Comments();
-        $this->assertEquals(1, $comments->count());
+        $this->assertEquals(4, $comments->count());
         $member = Member::get()->first();
         try {
             $comments->add($member);
@@ -66,21 +66,23 @@ class CommentListTest extends FunctionalTest {
 	public function testAddComment() {
 		$item = $this->objFromFixture('CommentableItem', 'first');
         $comments = $item->Comments();
-        $this->assertEquals(1, $comments->count());
+        $this->assertEquals(4, $comments->count());
         $newComment = new Comment();
         $newComment->Name = 'Fred Bloggs';
         $newComment->Comment = 'This is a test comment';
         $newComment->write();
         $comments->add($newComment);
 
-        // As a comment has been added, there should be 2 comments now
-        $this->assertEquals(2, $item->Comments()->count());
+        // As a comment has been added, there should be 5 comments now
+        $this->assertEquals(5, $item->Comments()->count());
 
         $newComment2 = new Comment();
         $newComment2->Name = 'John Smith';
         $newComment2->Comment = 'This is another test comment';
         $newComment2->write();
         $comments->add($newComment2);
+
+        $this->assertEquals(6, $item->Comments()->count());
 
         // Check the order by testing the actual comments themselves
         $actualComments = array();
@@ -89,6 +91,9 @@ class CommentListTest extends FunctionalTest {
         }
         $expected = array(
             'textFA',
+            'Reply to firstComA 1',
+            'Reply to firstComA 2',
+            'Reply to firstComA 3',
             $newComment->Comment,
             $newComment2->Comment
         );
@@ -97,18 +102,18 @@ class CommentListTest extends FunctionalTest {
 
 	public function testRemoveComment() {
         $item = $this->objFromFixture('CommentableItem', 'first');
-        $this->assertEquals(1, $item->Comments()->count());
+        $this->assertEquals(4, $item->Comments()->count());
         $comments = $item->Comments();
         $comment = $comments->first();
         $comments->remove($comment);
 
         // 1-1 = 0
-        $this->assertEquals(0, $item->Comments()->count());
+        $this->assertEquals(3, $item->Comments()->count());
     }
 
     public function testRemoveNonComment() {
         $item = $this->objFromFixture('CommentableItem', 'first');
-        $this->assertEquals(1, $item->Comments()->count());
+        $this->assertEquals(4, $item->Comments()->count());
         $comments = $item->Comments();
 
         // try and remove a non comment
