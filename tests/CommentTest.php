@@ -76,6 +76,11 @@ class CommentTest extends FunctionalTest {
         $this->assertEquals('CommentableItem_Controller#comment-'.$comment->ID,
             $comment->Link());
         $this->assertEquals($comment->ID, $comment->ID);
+
+        // An orphan comment has no link
+        $comment->ParentID = 0;
+        $comment->write();
+        $this->assertEquals('', $comment->Link());
 	}
 
 	public function testPermalink() {
@@ -253,9 +258,18 @@ class CommentTest extends FunctionalTest {
             $comment->getAuthorName()
         );
 
+        error_log('COMMENT AUTHOR:'.$comment->AuthorID);
         $comment->Name = '';
         $this->assertEquals(
             '',
+            $comment->getAuthorName()
+        );
+
+        $author = $this->objFromFixture('Member', 'visitor');
+        $comment->AuthorID = $author->ID;
+        $comment->write();
+        $this->assertEquals(
+            'visitor',
             $comment->getAuthorName()
         );
 
@@ -405,7 +419,7 @@ class CommentTest extends FunctionalTest {
         $this->assertEquals($expected, $names);
     }
 
-/*
+
 	public function testPurifyHtml() {
         $comment = $this->objFromFixture('Comment', 'firstComA');
 
@@ -415,7 +429,7 @@ class CommentTest extends FunctionalTest {
             $comment->purifyHtml($dirtyHTML)
         );
 	}
-*/
+
 
 	public function testGetHtmlPurifierService() {
 		$this->markTestSkipped('TODO');
@@ -593,7 +607,25 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testUpdateDepth() {
-		$this->markTestSkipped('TODO');
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4
+        ));
+
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $children = $comment->allReplies()->toArray();
+        error_log(print_r($children,1));
+        // Make the second child a child of the first
+        // Make the third child a child of the second
+        $reply1 = $children[0];
+        $reply2 = $children[1];
+        $reply3 = $children[2];
+        $reply2->ParentCommentID = $reply1->ID;
+        $reply2->write();
+        $this->assertEquals(3, $reply2->Depth);
+        $reply3->ParentCommentID = $reply2->ID;
+        $reply3->write();
+        $this->assertEquals(4, $reply3->Depth);
 	}
 
 	public function testGetToken() {
