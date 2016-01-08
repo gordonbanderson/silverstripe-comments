@@ -5,13 +5,13 @@
  * @subpackage tests
  */
 class CommentingControllerTest extends FunctionalTest {
-	
+
 	public static $fixture_file = 'CommentsTest.yml';
 
 	protected $extraDataObjects = array(
 		'CommentableItem'
 	);
-	
+
 	protected $securityEnabled;
 
 	public function tearDown() {
@@ -29,7 +29,13 @@ class CommentingControllerTest extends FunctionalTest {
 	}
 
 	public function testRSS() {
-		$item = $this->objFromFixture('CommentableItem', 'first');
+        // Delete the newly added children of firstComA so as not to have to recalculate values below
+        $this->objFromFixture('Comment', 'firstComAChild1')->delete();
+        $this->objFromFixture('Comment', 'firstComAChild2')->delete();
+        $this->objFromFixture('Comment', 'firstComAChild3')->delete();
+
+        $item = $this->objFromFixture('CommentableItem', 'first');
+
 
 		// comments sitewide
 		$response = $this->get('CommentingController/rss');
@@ -56,6 +62,11 @@ class CommentingControllerTest extends FunctionalTest {
 	}
 
 	public function testCommentsForm() {
+        // Delete the newly added children of firstComA so as not to change this test
+        $this->objFromFixture('Comment', 'firstComAChild1')->delete();
+        $this->objFromFixture('Comment', 'firstComAChild2')->delete();
+        $this->objFromFixture('Comment', 'firstComAChild3')->delete();
+
 		SecurityToken::disable();
 		$this->autoFollowRedirection = false;
 		$parent = $this->objFromFixture('CommentableItem', 'first');
@@ -83,7 +94,7 @@ class CommentingControllerTest extends FunctionalTest {
 			)),
 			Comment::get()->filter('Email', 'guy@test.com')
 		);
-		
+
 		// Test posting to parent comment
 		$parentComment = $this->objFromFixture('Comment', 'firstComA');
 		$this->assertEquals(0, $parentComment->ChildComments()->count());
