@@ -505,7 +505,7 @@ class CommentTest extends FunctionalTest {
             'nested_comments' => false
         ));
 
-        $this->assertEquals(array(), $comment->allReplies());
+        $this->assertEquals(0, $comment->allReplies()->count());
 	}
 
 	public function testReplies() {
@@ -532,6 +532,7 @@ class CommentTest extends FunctionalTest {
         // Test that unmoderated comments are not returned
         $childComment = $comment->Replies()->first();
         $childComment->Moderated = 0;
+        $childComment->IsSpam = 0;
         $childComment->write();
         $this->assertEquals(
             1,
