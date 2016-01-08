@@ -156,7 +156,16 @@ class CommentsExtensionTest extends SapphireTest {
 	}
 
 	public function testGetPostingRequiresPermission() {
-		$this->markTestSkipped('TODO');
+        $item = $this->objFromFixture('CommentableItem', 'first');
+        try {
+            $item->getPostingRequiresPermission();
+
+        } catch (PHPUnit_Framework_Error_Deprecated $e) {
+            $expected = 'CommentsExtension->getPostingRequiresPermission is '.
+            'deprecated. Use getPostingRequiredPermission instead. Called from'.
+            ' call_user_func_array.';
+            $this->assertEquals($expected, $e->getMessage());
+        }
 	}
 
 	public function testGetPostingRequiredPermission() {
@@ -164,7 +173,16 @@ class CommentsExtensionTest extends SapphireTest {
 	}
 
 	public function testCanPost() {
-		$this->markTestSkipped('TODO');
+		$item = $this->objFromFixture('CommentableItem', 'first');
+        try {
+            $item->canPost();
+
+        } catch (PHPUnit_Framework_Error_Deprecated $e) {
+            $expected = 'CommentsExtension->canPost is '.
+            'deprecated. Use canPostComment instead. Called from'.
+            ' call_user_func_array.';
+            $this->assertEquals($expected, $e->getMessage());
+        }
 	}
 
 	public function testCanPostComment() {
@@ -176,19 +194,44 @@ class CommentsExtensionTest extends SapphireTest {
 	}
 
 	public function testGetRssLink() {
-		$this->markTestSkipped('TODO');
+		$item = $this->objFromFixture('CommentableItem', 'first');
+        try {
+            $item->getRssLink();
+
+        } catch (PHPUnit_Framework_Error_Deprecated $e) {
+            $expected = 'CommentsExtension->getRssLink is '.
+            'deprecated. Use getCommentRSSLink instead. Called from'.
+            ' call_user_func_array.';
+            $this->assertEquals($expected, $e->getMessage());
+        }
 	}
 
 	public function testGetCommentRSSLink() {
-		$this->markTestSkipped('TODO');
+	   $item = $this->objFromFixture('CommentableItem', 'first');
+       $link = $item->getCommentRSSLink();
+       $this->assertEquals('/CommentingController/rss', $link);
 	}
 
 	public function testGetRssLinkPage() {
-		$this->markTestSkipped('TODO');
+		$item = $this->objFromFixture('CommentableItem', 'first');
+        try {
+            $item->getRssLinkPage();
+
+        } catch (PHPUnit_Framework_Error_Deprecated $e) {
+            $expected = 'CommentsExtension->getRssLinkPage is '.
+            'deprecated. Use getCommentRSSLinkPage instead. Called from'.
+            ' call_user_func_array.';
+            $this->assertEquals($expected, $e->getMessage());
+        }
 	}
 
 	public function testGetCommentRSSLinkPage() {
-		$this->markTestSkipped('TODO');
+		$item = $this->objFromFixture('CommentableItem', 'first');
+        $page = $item->getCommentRSSLinkPage();
+        $this->assertEquals(
+            '/CommentingController/rss/CommentableItem/' . $item->ID,
+            $page
+        );
 	}
 
 	public function testCommentsForm() {
@@ -214,10 +257,5 @@ class CommentsExtensionTest extends SapphireTest {
 	public function testUpdateCMSFields() {
 		$this->markTestSkipped('TODO');
 	}
-
-}
-
-
-class CommentsExtentionThing_TestOnly extends SiteTree implements TestOnly {
 
 }
