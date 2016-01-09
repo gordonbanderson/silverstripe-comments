@@ -56,6 +56,7 @@ class CommentsGridFieldActionTest extends SapphireTest {
 	}
 
 	public function testGetColumnContent() {
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
 		$action = new CommentsGridFieldAction();
         $record = new Comment();
         $record->Name = 'Name of commeter';
