@@ -1,17 +1,35 @@
 <?php
 
 class CommentingTest extends SapphireTest {
-	public function testAdd() {
-		$this->markTestSkipped('TODO');
-	}
 
-	public function testRemove() {
-		$this->markTestSkipped('TODO');
-	}
+    public function setUpOnce() {
+        Member::add_extension('CommentsExtension');
+        parent::setUpOnce();
+    }
 
-	public function testHas_commenting() {
-		$this->markTestSkipped('TODO');
-	}
+    public function testDeprecatedMethods() {
+        $methods = array('add', 'remove', 'has_commenting', 'get_config_value',
+                            'set_config_value');
+        foreach ($methods as $methodName) {
+            try {
+                if (
+                    $methodName == 'get_config_value' ||
+                    $methodName == 'set_config_value'
+                    ) {
+                    Commenting::$methodName('Member', 'keyname');
+                } else {
+                    Commenting::$methodName('Member');
+                }
+
+
+            } catch (PHPUnit_Framework_Error_Deprecated $e) {
+                $expected = 'Using Commenting:' . $methodName .' is deprecated.'
+                          . ' Please use the config API instead';
+                $this->assertEquals($expected, $e->getMessage());
+            }
+        }
+    }
+
 
 	public function testSet_config_value() {
 		$this->markTestSkipped('TODO');
