@@ -181,7 +181,84 @@ class CommentsExtensionTest extends SapphireTest {
 	}
 
 	public function testCommentsForm() {
-		$this->markTestSkipped('TODO');
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'include_js' => false
+            )
+        );
+		$item = $this->objFromFixture('CommentableItem', 'first');
+
+        // The comments form is HTML to do assertions by contains
+        $cf = $item->CommentsForm();
+        $expected = '<form id="Form_CommentsForm" action="/CommentingController'
+        . '/CommentsForm" method="post" enctype="application/x-www-form-urlenco'
+        . 'ded">';
+        $this->assertContains($expected, $cf);
+        $this->assertContains('<h4>Post your comment</h4>', $cf);
+
+        // check the comments form exists
+        $expected = '<input type="text" name="Name" value="ADMIN User" class="text" id="Form_CommentsForm_Name" required="required"';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<input type="email" name="Email" value="ADMIN@example.org" class="email text" id="Form_CommentsForm_Email"';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<input type="text" name="URL" class="text" id="Form_CommentsForm_URL" data-msg-url="Please enter a valid URL"';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<input type="hidden" name="ParentID" value="1" class="hidden" id="Form_CommentsForm_ParentID" />';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<textarea name="Comment" class="textarea" id="Form_CommentsForm_Comment" required="required"';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<input type="submit" name="action_doPostComment" value="Post" class="action" id="Form_CommentsForm_action_doPostComment"';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<a href="/CommentingController/spam/';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<p>Reply to firstComA 1</p>';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<a href="/CommentingController/delete';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<p>Reply to firstComA 2</p>';
+        $this->assertContains($expected, $cf);
+
+        $expected = '<p>Reply to firstComA 3</p>';
+        $this->assertContains($expected, $cf);
+
+        /*
+        FIXME - should this not be empty?
+
+        $backend = Requirements::backend();
+        $this->assertEquals(
+            array(
+
+            ),
+            $backend->get_javascript()
+        );
+        */
+
+        Config::inst()->update('CommentsExtension', 'comments', array(
+            'include_js' => true
+            )
+        );
+
+        // Check for JS inclusion
+        $cf = $item->CommentsForm();
+        $backend = Requirements::backend();
+        $this->assertEquals(
+            array(
+                'framework/thirdparty/jquery/jquery.js',
+                'framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js',
+                'framework/thirdparty/jquery-validate/lib/jquery.form.js',
+                'comments/thirdparty/jquery-validate/jquery.validate.min.js',
+                'comments/javascript/CommentsInterface.js'
+            ),
+            $backend->get_javascript()
+        );
 	}
 
 	public function testAttachedToSiteTree() {
@@ -231,7 +308,38 @@ class CommentsExtensionTest extends SapphireTest {
         $item->ProvideComments = true;
         $item->write();
         $fields = $item->getCMSFields();
+        $this->assertFieldsForTab( 'Root.Comments',
+            array('CommentsNewCommentsTab', 'CommentsCommentsTab', 'CommentsSpamCommentsTab'),
+            $fields
+        );
+
+        $this->assertFieldsForTab( 'Root.Comments.CommentsNewCommentsTab',
+            array('NewComments'),
+            $fields
+        );
+
+        $this->assertFieldsForTab( 'Root.Comments.CommentsCommentsTab',
+            array('ApprovedComments'),
+            $fields
+        );
+
+        $this->assertFieldsForTab( 'Root.Comments.CommentsSpamCommentsTab',
+            array('SpamComments'),
+            $fields
+        );
 	}
+
+    private function assertFieldsForTab($tabName, $expected, $fields) {
+        $tab = $fields->findOrMakeTab($tabName);
+        $fields = $tab->FieldList();
+
+        $actual = array();
+        foreach ($fields as $field) {
+            array_push($actual, $field->getName());
+        }
+
+        $this->assertEquals($expected, $actual);
+    }
 
     public function testDeprecatedMethods() {
         $item = $this->objFromFixture('CommentableItem', 'first');
