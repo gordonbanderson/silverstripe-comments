@@ -8,8 +8,33 @@ class CommentsGridFieldTest extends SapphireTest {
        $comment->Name = 'Fred Bloggs';
        $comment->Comment = 'This is a comment';
        $attr = array();
-       $newRow = $gridfield->newRow(1, 1, $comment, $attr, $comment->Comment );
-       $this->assertEquals('<tr>This is a comment</tr>', $newRow);
+
+
+       try {
+            $class  = new ReflectionClass($gridfield);
+            $method = $class->getMethod('newRow');
+            $method->setAccessible(true);
+        }
+
+        catch (ReflectionException $e) {
+            $this->fail($e->getMessage());
+        }
+
+        $params = array(1, 1, $comment, $attr, $comment->Comment);
+        $newRow = $method->invokeArgs($gridfield, $params);
+        $this->assertEquals('<tr>This is a comment</tr>', $newRow);
+
+        $attr = array('class' => 'cssClass');
+        $params = array(1, 1, $comment, $attr, $comment->Comment);
+        $newRow = $method->invokeArgs($gridfield, $params);
+        $this->assertEquals('<tr class="cssClass">This is a comment</tr>', $newRow);
+
+        $comment->markSpam();
+        $params = array(1, 1, $comment, $attr, $comment->Comment);
+        $newRow = $method->invokeArgs($gridfield, $params);
+        $this->assertEquals('<tr class="cssClass spam">This is a comment</tr>', $newRow);
+
+
 	}
 
 }
