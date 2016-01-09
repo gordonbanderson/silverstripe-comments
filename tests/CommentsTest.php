@@ -4,9 +4,9 @@
  * @package comments
  */
 class CommentsTest extends FunctionalTest {
-	
+
 	public static $fixture_file = 'comments/tests/CommentsTest.yml';
-	
+
 	protected $extraDataObjects = array(
 		'CommentableItem',
 		'CommentableItemEnabled',
@@ -75,7 +75,7 @@ class CommentsTest extends FunctionalTest {
 		// require_moderation_nonmembers still filters out unmoderated comments
 		Config::inst()->update('CommentableItem', 'comments', array('require_moderation' => false));
 		$this->assertEquals(1, $item->Comments()->Count());
-		
+
 		Config::inst()->update('CommentableItem', 'comments', array('require_moderation_nonmembers' => false));
 		$this->assertEquals(2, $item->Comments()->Count());
 
@@ -212,7 +212,7 @@ class CommentsTest extends FunctionalTest {
 		$this->logInWithPermission('ANY_PERMISSION');
 		$this->assertTrue($item->canPostComment());
 		$this->assertTrue($item2->canPostComment());
-		
+
 	}
 
 	public function testCanView() {
@@ -220,15 +220,15 @@ class CommentsTest extends FunctionalTest {
 		$admin = $this->objFromFixture('Member', 'commentadmin');
 		$comment = $this->objFromFixture('Comment', 'firstComA');
 
-		$this->assertTrue($comment->canView($visitor), 
+		$this->assertTrue($comment->canView($visitor),
 			'Unauthenticated members can view comments associated to a object with ProvideComments=1'
 		);
 		$this->assertTrue($comment->canView($admin),
 			'Admins with CMS_ACCESS_CommentAdmin permissions can view comments associated to a page with ProvideComments=1'
 		);
-		
+
 		$disabledComment = $this->objFromFixture('Comment', 'disabledCom');
-		
+
 		$this->assertFalse($disabledComment->canView($visitor),
 			'Unauthenticated members can not view comments associated to a object with ProvideComments=0'
 		);
@@ -237,25 +237,25 @@ class CommentsTest extends FunctionalTest {
 			'Admins with CMS_ACCESS_CommentAdmin permissions can view comments associated to a page with ProvideComments=0'
 		);
 	}
-	
+
 	public function testCanEdit() {
 		$visitor = $this->objFromFixture('Member', 'visitor');
 		$admin = $this->objFromFixture('Member', 'commentadmin');
 		$comment = $this->objFromFixture('Comment', 'firstComA');
-		
+
 		$this->assertFalse($comment->canEdit($visitor));
 		$this->assertTrue($comment->canEdit($admin));
 	}
-	
+
 	public function testCanDelete() {
 		$visitor = $this->objFromFixture('Member', 'visitor');
 		$admin = $this->objFromFixture('Member', 'commentadmin');
 		$comment = $this->objFromFixture('Comment', 'firstComA');
-		
+
 		$this->assertFalse($comment->canEdit($visitor));
 		$this->assertTrue($comment->canEdit($admin));
 	}
-	
+
 	public function testDeleteComment() {
 		// Test anonymous user
 		if($member = Member::currentUser()) $member->logOut();
@@ -378,7 +378,7 @@ class CommentsTest extends FunctionalTest {
 		// Cannot re-ham hammed comment
 		$this->assertNull($check->HamLink());
 	}
-	
+
 	public function testApproveComment() {
 		// Test anonymous user
 		if($member = Member::currentUser()) $member->logOut();
@@ -446,7 +446,7 @@ class CommentsTest extends FunctionalTest {
 		}
 
 		$origAllowed = Commenting::get_config_value('CommentableItem','html_allowed');
-		
+
 		// Without HTML allowed
 		$comment1 = new Comment();
 		$comment1->BaseClass = 'CommentableItem';
@@ -489,7 +489,7 @@ class CommentsTest extends FunctionalTest {
 		$comment->ParentID = $item->ID;
 		$comment->BaseClass = 'CommentableItem';
 		$comment->write();
-		
+
 		$html = $item->customise(array('CommentsEnabled' => true))->renderWith('CommentsInterface');
 		$this->assertContains(
 			'&lt;p&gt;my comment&lt;/p&gt;',
@@ -581,8 +581,18 @@ class CommentableItem extends DataObject implements TestOnly {
 	}
 
 	public function canView($member = null) {
-		return true;
-	}
+        return true;
+    }
+
+    // This is needed for canModerateComments
+    public function canEdit($member = null) {
+        if($member instanceof Member) $memberID = $member->ID;
+        else if(is_numeric($member)) $memberID = $member;
+        else $memberID = Member::currentUserID();
+
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CMS_ACCESS_CommentAdmin"))) return true;
+        return false;
+    }
 
 	public function Link() {
 		return $this->RelativeLink();
@@ -615,7 +625,7 @@ class CommentableItemDisabled extends CommentableItem {
  * @subpackage tests
  */
 class CommentableItem_Controller extends Controller implements TestOnly {
-	
+
 	public function index() {
 		return CommentableItem::get()->first()->CommentsForm();
 	}
