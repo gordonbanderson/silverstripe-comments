@@ -6,7 +6,6 @@ class CommentsGridFieldBulkActionTest extends SapphireTest {
 	}
 
 	public function testApprove() {
-        $action = new CommentsGridFieldBulkAction();
 		$this->markTestSkipped('TODO');
 	}
 
