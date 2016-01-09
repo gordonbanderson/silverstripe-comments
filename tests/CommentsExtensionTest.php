@@ -130,14 +130,6 @@ class CommentsExtensionTest extends SapphireTest {
 		$this->markTestSkipped('TODO');
 	}
 
-	public function testPagedComments() {
-		$this->markTestSkipped('TODO');
-	}
-
-	public function testGetCommentsConfigured() {
-		$this->markTestSkipped('TODO');
-	}
-
 	public function testGetCommentsEnabled() {
 		$this->markTestSkipped('TODO');
 	}
@@ -160,12 +152,16 @@ class CommentsExtensionTest extends SapphireTest {
 		$this->markTestSkipped('TODO');
 	}
 
-	public function testCanPostComment() {
-		$this->markTestSkipped('TODO');
-	}
-
 	public function testCanModerateComments() {
-		$this->markTestSkipped('TODO');
+        // ensure nobody logged in
+        if(Member::currentUser()) { Member::currentUser()->logOut(); }
+
+		$item = $this->objFromFixture('CommentableItem', 'first');
+        $this->assertFalse($item->canModerateComments());
+
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
+        $this->assertTrue($item->canModerateComments());
+
 	}
 
 	public function testGetCommentRSSLink() {
@@ -219,7 +215,6 @@ class CommentsExtensionTest extends SapphireTest {
         );
 
         $this->assertEquals(4, sizeof($results));
-
 	}
 
 	public function testGetCommentsOption() {
@@ -231,10 +226,12 @@ class CommentsExtensionTest extends SapphireTest {
 	}
 
 	public function testUpdateCMSFields() {
-		$this->markTestSkipped('TODO');
+        $this->logInWithPermission('ADMIN');
+		$item = $this->objFromFixture('CommentableItem', 'first');
+        $item->ProvideComments = true;
+        $item->write();
+        $fields = $item->getCMSFields();
 	}
-
-
 
     public function testDeprecatedMethods() {
         $item = $this->objFromFixture('CommentableItem', 'first');
