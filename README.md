@@ -12,8 +12,8 @@
 [![Monthly Downloads](https://poser.pugx.org/silverstripe/comments/d/monthly)](https://packagist.org/packages/silverstripe/comments)
 [![Daily Downloads](https://poser.pugx.org/silverstripe/comments/d/daily)](https://packagist.org/packages/silverstripe/comments)
 
-[![Dependency Status](https://www.versioneye.com/php/silverstripe/comments_COLON/badge.svg)](https://www.versioneye.com/php/silverstripe/comments_COLON)
-[![Reference Status](https://www.versioneye.com/php/silverstripe/comments_COLON/reference_badge.svg?style=flat)](https://www.versioneye.com/php/silverstripe/comments_COLON/references)
+[![Dependency Status](https://www.versioneye.com/php/silverstripe:comments/badge.svg)](https://www.versioneye.com/php/silverstripe:comments)
+[![Reference Status](https://www.versioneye.com/php/silverstripe:comments/reference_badge.svg?style=flat)](https://www.versioneye.com/php/silverstripe:comments/references)
 
 ![codecov.io](https://codecov.io/github/gordonbanderson/silverstripe-comments/branch.svg?branch=testing)
 
