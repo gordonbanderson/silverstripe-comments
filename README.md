@@ -13,10 +13,9 @@
 [![Monthly Downloads](https://poser.pugx.org/silverstripe/comments/d/monthly)](https://packagist.org/packages/silverstripe/comments)
 [![Daily Downloads](https://poser.pugx.org/silverstripe/comments/d/daily)](https://packagist.org/packages/silverstripe/comments)
 
-#
 
 ![codecov.io](https://codecov.io/github/gordonbanderson/silverstripe-comments/branch.svg?branch=testing)
-[![Build Status](https://secure.travis-ci.org/silverstripe/silverstripe-comments.png?branch=master)](http://travis-ci.org/silverstripe/silverstripe-comments)
+
 
 [Changelog](CHANGELOG.md)
 
