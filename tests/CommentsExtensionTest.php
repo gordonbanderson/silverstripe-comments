@@ -229,27 +229,21 @@ class CommentsExtensionTest extends SapphireTest {
         $expected = '<p>Reply to firstComA 3</p>';
         $this->assertContains($expected, $cf);
 
-        /*
-        FIXME - should this not be empty?
-
+        // Check for JS inclusion
         $backend = Requirements::backend();
         $this->assertEquals(
-            array(
-
-            ),
+            array(),
             $backend->get_javascript()
         );
-        */
 
-        Config::inst()->update('CommentsExtension', 'comments', array(
+        Config::inst()->update('CommentableItem', 'comments', array(
             'include_js' => true
             )
         );
-
-        // Check for JS inclusion
         $cf = $item->CommentsForm();
+
         $backend = Requirements::backend();
-        $this->assertEquals(
+         $this->assertEquals(
             array(
                 'framework/thirdparty/jquery/jquery.js',
                 'framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js',
