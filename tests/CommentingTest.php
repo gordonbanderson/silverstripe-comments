@@ -72,11 +72,63 @@ class CommentingTest extends SapphireTest {
             'comments_extension',
             Commenting::get_config_value(null, 'comments_holder_id')
         );
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Member does not have commenting enabled'
+        );
+        Commenting::get_config_value('Member', 'comments_holder_id');
 	}
 
-	public function testConfig_value_equals() {
-		$this->markTestSkipped('TODO');
+	public function test_config_value_equals() {
+		Config::inst()->update('CommentableItem', 'comments',
+            array(
+            'comments_holder_id' => 'some_value'
+            )
+        );
+
+        $this->assertTrue(
+            Commenting::config_value_equals(
+                'CommentableItem',
+                'comments_holder_id',
+                'some_value'
+            )
+        );
+
+        $this->assertNull(
+            Commenting::config_value_equals(
+                'CommentableItem',
+                'comments_holder_id',
+                'not_some_value'
+            )
+        );
 	}
+
+    public function test_add() {
+        Commenting::add('Member', array('comments_holder_id' => 'test_add_value'));
+        $this->assertEquals(
+            'test_add_value',
+            Config::inst()->get(
+                'Member',
+                'comments'
+            )['comments_holder_id']
+        );
+
+        // no settings updated
+        Commenting::add('Member');
+        $this->assertEquals(
+            'test_add_value',
+            Config::inst()->get(
+                'Member',
+                'comments'
+            )['comments_holder_id']
+        );
+
+        $this->setExpectedException('InvalidArgumentException', "\$settings needs to be an array or null");
+        Commenting::add('Member', 'illegal format, not an array');
+
+
+    }
 
 	public function test_can_member_post() {
         // logout
