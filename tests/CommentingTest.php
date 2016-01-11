@@ -3,25 +3,14 @@
 class CommentingTest extends SapphireTest {
 
     public function setUpOnce() {
-        //Member::add_extension('CommentsExtension');
         parent::setUpOnce();
     }
 
     public function testDeprecatedMethods() {
-        $methods = array('add', 'remove', 'has_commenting', 'get_config_value',
-                            'set_config_value');
+        $methods = array('add', 'remove', 'has_commenting');
         foreach ($methods as $methodName) {
             try {
-                if (
-                    $methodName == 'get_config_value' ||
-                    $methodName == 'set_config_value'
-                    ) {
-                    Commenting::$methodName('Member', 'keyname');
-                } else {
-                    Commenting::$methodName('Member');
-                }
-
-
+                Commenting::$methodName('Member');
             } catch (PHPUnit_Framework_Error_Deprecated $e) {
                 $expected = 'Using Commenting:' . $methodName .' is deprecated.'
                           . ' Please use the config API instead';
@@ -31,12 +20,58 @@ class CommentingTest extends SapphireTest {
     }
 
 
-	public function testSet_config_value() {
-		$this->markTestSkipped('TODO');
+	public function test_set_config_value() {
+		//    public static function set_config_value($class, $key, $value = false) {
+        Commenting::set_config_value(
+            'CommentableItem',
+            'comments_holder_id',
+            'commentable_item'
+        );
+
+        $this->assertEquals(
+            'commentable_item',
+            Config::inst()->get(
+                'CommentableItem',
+                'comments'
+            )['comments_holder_id']
+        );
+
+        Commenting::set_config_value(
+            'all',
+            'comments_holder_id',
+            'all_items_actually_commentsextension'
+        );
+
+        $this->assertEquals(
+            'all_items_actually_commentsextension',
+            Config::inst()->get(
+                'CommentsExtension',
+                'comments'
+            )['comments_holder_id']
+        );
 	}
 
-	public function testGet_config_value() {
-		$this->markTestSkipped('TODO');
+	public function test_get_config_value() {
+		Config::inst()->update('CommentableItem', 'comments',
+            array(
+            'comments_holder_id' => 'commentable_item'
+            )
+        );
+        $this->assertEquals(
+            'commentable_item',
+            Commenting::get_config_value('CommentableItem', 'comments_holder_id')
+        );
+
+        Config::inst()->update('CommentsExtension', 'comments',
+            array(
+            'comments_holder_id' => 'comments_extension'
+            )
+        );
+        // if class is null, method uses the CommentsExtension property
+        $this->assertEquals(
+            'comments_extension',
+            Commenting::get_config_value(null, 'comments_holder_id')
+        );
 	}
 
 	public function testConfig_value_equals() {
