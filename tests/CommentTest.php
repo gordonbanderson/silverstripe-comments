@@ -206,6 +206,10 @@ class CommentTest extends FunctionalTest {
         // visitor can view
         $this->logInAs('visitor');
         $this->assertTrue($comment->canView());
+
+        $comment->ParentID = 0;
+        $comment->write();
+        $this->assertFalse($comment->canView());
 	}
 
 	public function testCanEdit() {
@@ -218,6 +222,10 @@ class CommentTest extends FunctionalTest {
         // visitor cannot
         $this->logInAs('visitor');
         $this->assertFalse($comment->canEdit());
+
+        $comment->ParentID = 0;
+        $comment->write();
+        $this->assertFalse($comment->canEdit());
 	}
 
 	public function testCanDelete() {
@@ -229,6 +237,10 @@ class CommentTest extends FunctionalTest {
 
         // visitor cannot
         $this->logInAs('visitor');
+        $this->assertFalse($comment->canDelete());
+
+        $comment->ParentID = 0;
+        $comment->write();
         $this->assertFalse($comment->canDelete());
 	}
 
@@ -258,7 +270,6 @@ class CommentTest extends FunctionalTest {
             $comment->getAuthorName()
         );
 
-        error_log('COMMENT AUTHOR:'.$comment->AuthorID);
         $comment->Name = '';
         $this->assertEquals(
             '',
@@ -272,6 +283,11 @@ class CommentTest extends FunctionalTest {
             'visitor',
             $comment->getAuthorName()
         );
+
+        // null the names, expect null back
+        $comment->Name = null;
+        $comment->AuthorID = 0;
+        $this->assertNull($comment->getAuthorName());
 
 	}
 
@@ -522,6 +538,7 @@ class CommentTest extends FunctionalTest {
 
         // Test that spam comments are not returned
         $childComment = $comment->Replies()->first();
+        error_log('T1: Child comment ID:' . $childComment->ID);
         $childComment->IsSpam = 1;
         $childComment->write();
         $this->assertEquals(
@@ -530,7 +547,11 @@ class CommentTest extends FunctionalTest {
         );
 
         // Test that unmoderated comments are not returned
+        //
         $childComment = $comment->Replies()->first();
+               error_log('T2: Child comment ID:' . $childComment->ID);
+
+        // FIXME - moderation settings scenarios need checked here
         $childComment->Moderated = 0;
         $childComment->IsSpam = 0;
         $childComment->write();
@@ -538,6 +559,12 @@ class CommentTest extends FunctionalTest {
             1,
             $comment->Replies()->count()
         );
+
+
+        // Test moderation required on the front end
+        $item = $comment->Parent();
+        $item->ModerationRequired = true;
+        $item->write();
 
         // Turn off nesting, empty array should be returned
         Config::inst()->update('CommentableItem', 'comments', array(
