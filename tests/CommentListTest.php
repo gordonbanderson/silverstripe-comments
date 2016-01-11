@@ -66,10 +66,20 @@ class CommentListTest extends FunctionalTest {
 	public function testAddComment() {
 		$item = $this->objFromFixture('CommentableItem', 'first');
         $comments = $item->Comments();
+        $ctr = 6;
+        // set CreatedAt times to avoid inconsistencies when CreatedAt trips over
+        // into the next second during tests
+        $now = time();
+        foreach ($comments as $comment) {
+            $comment->CreatedAt = $now-$ctr*3600;
+            $comment->write();
+            $ctr--;
+        }
         $this->assertEquals(4, $comments->count());
         $newComment = new Comment();
         $newComment->Name = 'Fred Bloggs';
         $newComment->Comment = 'This is a test comment';
+        $newComment->Created = $now-3000;
         $newComment->write();
         $comments->add($newComment);
 
@@ -79,14 +89,17 @@ class CommentListTest extends FunctionalTest {
         $newComment2 = new Comment();
         $newComment2->Name = 'John Smith';
         $newComment2->Comment = 'This is another test comment';
+        $newComment2->CreatedAt = $now-2000;
         $newComment2->write();
-        $comments->add($newComment2);
+
+        // test adding the same comment by ID
+        $comments->add($newComment2->ID);
 
         $this->assertEquals(6, $item->Comments()->count());
 
         // Check the order by testing the actual comments themselves
         $actualComments = array();
-        foreach ($comments as $comment) {
+        foreach ($item->Comments() as $comment) {
             array_push($actualComments, $comment->Comment);
         }
         $expected = array(
@@ -94,21 +107,32 @@ class CommentListTest extends FunctionalTest {
             'Reply to firstComA 1',
             'Reply to firstComA 2',
             'Reply to firstComA 3',
-            $newComment->Comment,
-            $newComment2->Comment
+            $newComment2->Comment,
+            $newComment->Comment
         );
         $this->assertEquals($expected, $actualComments);
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            "CommentList::add() can't be called until a single foreign ID is set"
+        );
+        $list = new CommentList('CommentableItem');
+        $list->add($newComment);
 	}
 
 	public function testRemoveComment() {
+        // remove by comment
         $item = $this->objFromFixture('CommentableItem', 'first');
         $this->assertEquals(4, $item->Comments()->count());
         $comments = $item->Comments();
         $comment = $comments->first();
         $comments->remove($comment);
 
-        // 1-1 = 0
-        $this->assertEquals(3, $item->Comments()->count());
+        // now remove by ID
+        $comments = $item->Comments();
+        $comment = $comments->first();
+        $comments->remove($comment->ID);
+        $this->assertEquals(2, $item->Comments()->count());
     }
 
     public function testRemoveNonComment() {
