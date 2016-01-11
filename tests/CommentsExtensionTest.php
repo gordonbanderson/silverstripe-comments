@@ -268,7 +268,6 @@ class CommentsExtensionTest extends SapphireTest {
 	public function testPagedComments() {
         $item = $this->objFromFixture('CommentableItem', 'first');
         $results = $item->PagedComments()->toArray();
-        error_log(print_r($results,1));
 
         foreach ($results as $result) {
            $result->sourceQueryParams = null;
@@ -303,6 +302,10 @@ class CommentsExtensionTest extends SapphireTest {
 	}
 
 	public function testUpdateCMSFields() {
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'require_login_cms' => false
+            )
+        );
         $this->logInWithPermission('ADMIN');
 		$item = $this->objFromFixture('CommentableItem', 'first');
         $item->ProvideComments = true;
@@ -327,17 +330,61 @@ class CommentsExtensionTest extends SapphireTest {
             array('SpamComments'),
             $fields
         );
+
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'require_login_cms' => true
+            )
+        );
+        $fields = $item->getCMSFields();
+        $this->assertFieldsForTab('Root.Settings', array('Comments'), $fields);
+        $settingsTab = $fields->findOrMakeTab('Root.Settings');
+        $settingsChildren = $settingsTab->getChildren();
+        $this->assertEquals(1, $settingsChildren->count());
+        $fieldGroup = $settingsChildren->first();
+        $fields = $fieldGroup->getChildren();
+        $this->assertFieldNames(
+            array('ProvideComments', 'CommentsRequireLogin'),
+            $fields
+        );
+
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'require_login_cms' => true,
+            'require_moderation_cms' => true
+            )
+        );
+
+        $fields = $item->getCMSFields();
+        $this->assertFieldsForTab('Root.Settings', array('Comments', 'ModerationRequired'), $fields);
+        $settingsTab = $fields->findOrMakeTab('Root.Settings');
+        $settingsChildren = $settingsTab->getChildren();
+        $this->assertEquals(2, $settingsChildren->count());
+        $fieldGroup = $settingsChildren->first();
+        $fields = $fieldGroup->getChildren();
+        $this->assertFieldNames(
+            array('ProvideComments', 'CommentsRequireLogin'),
+            $fields
+        );
 	}
 
+    /*
+    This only works if the last section is not a field group, e.g. a Comments
+    field group inside of a Root.Settings tab will not work
+     */
     private function assertFieldsForTab($tabName, $expected, $fields) {
         $tab = $fields->findOrMakeTab($tabName);
         $fields = $tab->FieldList();
+        $this->assertFieldNames($expected, $fields);
+    }
 
+    private function assertFieldNames($expected, $fields) {
         $actual = array();
         foreach ($fields as $field) {
-            array_push($actual, $field->getName());
+            if (get_class($field) == 'FieldGroup') {
+                array_push($actual, $field->Name());
+            } else {
+                array_push($actual, $field->getName());
+            }
         }
-
         $this->assertEquals($expected, $actual);
     }
 
@@ -362,6 +409,8 @@ class CommentsExtensionTest extends SapphireTest {
                 $this->assertStringStartsWith($expected, $e->getMessage());
             }
         }
+
+        // ooh,  $this->setExpectedException('ExpectedException', 'Expected Message');
 
     }
 
