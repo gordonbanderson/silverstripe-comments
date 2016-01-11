@@ -525,7 +525,8 @@ class CommentTest extends FunctionalTest {
 	}
 
 	public function testReplies() {
-        $this->logInAs('commentadmin');
+        CommentableItem::add_extension('CommentsExtension');
+        $this->logInWithPermission('ADMIN');
 		Config::inst()->update('CommentableItem', 'comments', array(
             'nested_comments' => true,
             'nested_depth' => 4
@@ -549,22 +550,34 @@ class CommentTest extends FunctionalTest {
         // Test that unmoderated comments are not returned
         //
         $childComment = $comment->Replies()->first();
-               error_log('T2: Child comment ID:' . $childComment->ID);
 
         // FIXME - moderation settings scenarios need checked here
         $childComment->Moderated = 0;
         $childComment->IsSpam = 0;
         $childComment->write();
         $this->assertEquals(
-            1,
+            2,
             $comment->Replies()->count()
         );
 
 
         // Test moderation required on the front end
-        $item = $comment->Parent();
-        $item->ModerationRequired = true;
+        $item = $this->objFromFixture('CommentableItem', 'first');
+        $item->ModerationRequired = 'Required';
         $item->write();
+
+        Config::inst()->update('CommentableItemDisabled', 'comments', array(
+            'nested_comments' => true,
+            'nested_depth' => 4,
+            'frontend_moderation' => true
+        ));
+
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+
+        $this->assertEquals(
+            0,
+            $comment->Replies()->count()
+        );
 
         // Turn off nesting, empty array should be returned
         Config::inst()->update('CommentableItem', 'comments', array(
@@ -575,6 +588,8 @@ class CommentTest extends FunctionalTest {
             0,
             $comment->Replies()->count()
         );
+
+        CommentableItem::remove_extension('CommentsExtension');
 	}
 
 	public function testPagedReplies() {
