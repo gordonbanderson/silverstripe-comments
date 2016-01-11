@@ -53,6 +53,56 @@ class CommentingControllerTest extends FunctionalTest {
 
     }
 
+    public function testHam() {
+        SecurityToken::disable();
+
+        // mark a comment as spam then ham it
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markSpam();
+        $st = new Comment_SecurityToken($comment);
+        $url = 'CommentingController/ham/' . $comment->ID;
+        $url = $st->addToUrl($url, Member::currentUser());
+        error_log($url);
+        $response = $this->get($url);
+        $this->assertEquals(200, $response->getStatusCode());
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+
+        // Need to use 0,1 here instead of false, true for SQLite
+        $this->assertEquals(0, $comment->IsSpam);
+        $this->assertEquals(1, $comment->Moderated);
+
+        // try and ham a non existent comment
+        $response = $this->get('CommentingController/ham/100000');
+        $this->assertEquals(404, $response->getStatusCode());
+
+    }
+
+    public function testSpam() {
+        SecurityToken::disable();
+
+        // mark a comment as approved then spam it
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markApproved();
+        $st = new Comment_SecurityToken($comment);
+        $url = 'CommentingController/spam/' . $comment->ID;
+        $url = $st->addToUrl($url, Member::currentUser());
+        error_log($url);
+        $response = $this->get($url);
+        $this->assertEquals(200, $response->getStatusCode());
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+
+        // Need to use 0,1 here instead of false, true for SQLite
+        $this->assertEquals(1, $comment->IsSpam);
+        $this->assertEquals(1, $comment->Moderated);
+
+        // try and spam a non existent comment
+        $response = $this->get('CommentingController/spam/100000');
+        $this->assertEquals(404, $response->getStatusCode());
+
+    }
+
 	public function testRSS() {
         // Delete the newly added children of firstComA so as not to have to recalculate values below
         $this->objFromFixture('Comment', 'firstComAChild1')->delete();
