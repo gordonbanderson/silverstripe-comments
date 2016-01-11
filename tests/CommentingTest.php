@@ -3,7 +3,7 @@
 class CommentingTest extends SapphireTest {
 
     public function setUpOnce() {
-        Member::add_extension('CommentsExtension');
+        //Member::add_extension('CommentsExtension');
         parent::setUpOnce();
     }
 
@@ -43,8 +43,34 @@ class CommentingTest extends SapphireTest {
 		$this->markTestSkipped('TODO');
 	}
 
-	public function testCan_member_post() {
-		$this->markTestSkipped('TODO');
+	public function test_can_member_post() {
+        // logout
+        if($member = Member::currentUser()) $member->logOut();
+
+        Config::inst()->update('CommentableItem', 'comments',
+            array(
+            'require_login' => false
+            )
+        );
+        $this->assertTrue(Commenting::can_member_post('CommentableItem'));
+
+        Config::inst()->update('CommentableItem', 'comments',
+            array(
+            'require_login' => true
+            )
+        );
+        $this->assertFalse(Commenting::can_member_post('CommentableItem'));
+
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
+        $this->assertTrue(Commenting::can_member_post('CommentableItem'));
+
+        Config::inst()->update('CommentableItem', 'comments',
+            array(
+            'require_login' => false
+            )
+        );
+
+        $this->assertTrue(Commenting::can_member_post('CommentableItem'));
 	}
 
 }
