@@ -28,6 +28,31 @@ class CommentingControllerTest extends FunctionalTest {
 		$this->securityEnabled = SecurityToken::is_enabled();
 	}
 
+    public function testApprove() {
+        SecurityToken::disable();
+
+        // mark a comment as spam then approve it
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markSpam();
+        $st = new Comment_SecurityToken($comment);
+        $url = 'CommentingController/approve/' . $comment->ID;
+        $url = $st->addToUrl($url, Member::currentUser());
+        error_log($url);
+        $response = $this->get($url);
+        $this->assertEquals(200, $response->getStatusCode());
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+
+        // Need to use 0,1 here instead of false, true for SQLite
+        $this->assertEquals(0, $comment->IsSpam);
+        $this->assertEquals(1, $comment->Moderated);
+
+        // try and approve a non existent comment
+        $response = $this->get('CommentingController/approve/100000');
+        $this->assertEquals(404, $response->getStatusCode());
+
+    }
+
 	public function testRSS() {
         // Delete the newly added children of firstComA so as not to have to recalculate values below
         $this->objFromFixture('Comment', 'firstComAChild1')->delete();
