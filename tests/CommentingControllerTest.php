@@ -79,8 +79,6 @@ class CommentingControllerTest extends FunctionalTest {
     }
 
     public function testSpam() {
-        SecurityToken::disable();
-
         // mark a comment as approved then spam it
         $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
         $comment = $this->objFromFixture('Comment', 'firstComA');
@@ -135,6 +133,46 @@ class CommentingControllerTest extends FunctionalTest {
 		$response = $this->get('CommentingController/rss/Fake');
 		$this->assertEquals(404, $response->getStatusCode());
 	}
+
+    // This is returning a 404 which looks logical code wise but also a bit weird.
+    // Test module on a clean install and check what the actual URL is first
+    public function testReply() {
+        $this->logInWithPermission('CMS_ACCESS_CommentAdmin');
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $item = $this->objFromFixture('CommentableItem', 'first');
+
+        $st = new Comment_SecurityToken($comment);
+        $url = 'CommentingController/reply/' . $item->ID.'?ParentCommentID=' . $comment->ID;
+        error_log($url);
+        $response = $this->get($url);
+        error_log(print_r($response,1));
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+    }
+
+
+
+    public function testCommentsFormUsePreview() {
+        // test with preview on
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'use_preview' => true
+        ));
+
+
+
+        $this->objFromFixture('Comment', 'firstComAChild1')->delete();
+        $this->objFromFixture('Comment', 'firstComAChild2')->delete();
+        $this->objFromFixture('Comment', 'firstComAChild3')->delete();
+
+        SecurityToken::disable();
+        $this->autoFollowRedirection = false;
+        $parent = $this->objFromFixture('CommentableItem', 'first');
+        $link = $parent->Link() . '/CommentsForm';
+        // Test posting to base comment
+        $response = $this->get($link);
+        error_log(print_r($response,1));
+    }
 
 	public function testCommentsForm() {
         // Delete the newly added children of firstComA so as not to change this test
@@ -196,5 +234,7 @@ class CommentingControllerTest extends FunctionalTest {
 				'BaseClass' => 'CommentableItem',
 				'ParentCommentID' => $parentComment->ID
 		)), $parentComment->ChildComments());
+
+
 	}
 }
