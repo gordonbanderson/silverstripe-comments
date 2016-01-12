@@ -435,17 +435,17 @@ class CommentTest extends FunctionalTest {
         $this->assertEquals($expected, $names);
     }
 
-/*
+
 	public function testPurifyHtml() {
         $comment = $this->objFromFixture('Comment', 'firstComA');
 
 		$dirtyHTML = '<p><script>alert("w00t")</script>my comment</p>';
         $this->assertEquals(
-            '',
+            'my comment',
             $comment->purifyHtml($dirtyHTML)
         );
 	}
-*/
+
 
 	public function testGetHtmlPurifierService() {
 		$this->markTestSkipped('TODO');
