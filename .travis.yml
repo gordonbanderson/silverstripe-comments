@@ -39,8 +39,9 @@ matrix:
 before_script:
   - phpenv rehash
   - composer self-update || true
-  - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
-  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
+  - git clone --branch suggest git@github.com:gordonbanderson/silverstripe-travis-support.git ~/travis-support
+# - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
+  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss --install-suggested yes
   - cd ~/builds/ss
 
 script:
