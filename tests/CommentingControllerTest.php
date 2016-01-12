@@ -38,7 +38,6 @@ class CommentingControllerTest extends FunctionalTest {
         $st = new Comment_SecurityToken($comment);
         $url = 'CommentingController/approve/' . $comment->ID;
         $url = $st->addToUrl($url, Member::currentUser());
-        error_log($url);
         $response = $this->get($url);
         $this->assertEquals(200, $response->getStatusCode());
         $comment = DataObject::get_by_id('Comment', $comment->ID);
@@ -71,7 +70,6 @@ class CommentingControllerTest extends FunctionalTest {
         $st = new Comment_SecurityToken($comment);
         $url = 'CommentingController/ham/' . $comment->ID;
         $url = $st->addToUrl($url, Member::currentUser());
-        error_log($url);
         $response = $this->get($url);
         $this->assertEquals(200, $response->getStatusCode());
         $comment = DataObject::get_by_id('Comment', $comment->ID);
@@ -94,7 +92,6 @@ class CommentingControllerTest extends FunctionalTest {
         $st = new Comment_SecurityToken($comment);
         $url = 'CommentingController/spam/' . $comment->ID;
         $url = $st->addToUrl($url, Member::currentUser());
-        error_log($url);
         $response = $this->get($url);
         $this->assertEquals(200, $response->getStatusCode());
         $comment = DataObject::get_by_id('Comment', $comment->ID);
