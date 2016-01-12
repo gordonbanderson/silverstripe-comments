@@ -159,7 +159,26 @@ class CommentingControllerTest extends FunctionalTest {
 
     }
 
+/*
+    public function testCommentsFormLoadMemberData() {
+        Config::inst()->update('CommentableItem', 'comments', array(
+            'use_preview' => false
+        ));
+        $this->logInAs('visitor');
+        SecurityToken::disable();
+        $parent = $this->objFromFixture('CommentableItem', 'first');
+        $parent->CommentsRequireLogin = true;
+        $parent->PostingRequiredPermission = true;
+        //$parent->write();
+        $commController = new CommentingController();
+        $commController->setOwnerRecord($parent);
 
+        $form = $commController->CommentsForm();
+        $commentsFields = $form->Fields()->first()->FieldList();
+        $expected = array('Name', 'Email', 'URL', 'Comment', 'PreviewComment');
+        CommentTestHelper::assertFieldNames($this, $expected, $commentsFields);
+    }
+*/
 
     public function testCommentsFormUsePreview() {
         // test with preview on
