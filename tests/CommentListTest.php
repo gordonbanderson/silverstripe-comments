@@ -100,6 +100,7 @@ class CommentListTest extends FunctionalTest {
         // Check the order by testing the actual comments themselves
         $actualComments = array();
         foreach ($item->Comments() as $comment) {
+            error_log("{$comment->CreatedAt}\t{$comment->Comment}");
             array_push($actualComments, $comment->Comment);
         }
         $expected = array(
