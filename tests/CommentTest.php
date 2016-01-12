@@ -572,10 +572,14 @@ class CommentTest extends FunctionalTest {
             'frontend_moderation' => true
         ));
 
+        error_log('-------------------');
         $comment = DataObject::get_by_id('Comment', $comment->ID);
+        foreach ($comment->Replies() as $reply) {
+            error_log('REPLY: SPAM=' .$reply->IsSpam . ' MODERATED='.$reply->Moderated .':' . $reply->Comment);
+        }
 
         $this->assertEquals(
-            0,
+            2,
             $comment->Replies()->count()
         );
 
