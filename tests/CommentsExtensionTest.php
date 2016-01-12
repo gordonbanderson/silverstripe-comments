@@ -337,7 +337,7 @@ class CommentsExtensionTest extends SapphireTest {
         $fieldGroup = $settingsChildren->first();
         $fields = $fieldGroup->getChildren();
         CommentTestHelper::assertFieldNames(
-            $this.
+            $this,
             array('ProvideComments', 'CommentsRequireLogin'),
             $fields
         );
