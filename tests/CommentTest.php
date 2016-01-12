@@ -539,7 +539,6 @@ class CommentTest extends FunctionalTest {
 
         // Test that spam comments are not returned
         $childComment = $comment->Replies()->first();
-        error_log('T1: Child comment ID:' . $childComment->ID);
         $childComment->IsSpam = 1;
         $childComment->write();
         $this->assertEquals(
@@ -572,11 +571,7 @@ class CommentTest extends FunctionalTest {
             'frontend_moderation' => true
         ));
 
-        error_log('-------------------');
         $comment = DataObject::get_by_id('Comment', $comment->ID);
-        foreach ($comment->Replies() as $reply) {
-            error_log('REPLY: SPAM=' .$reply->IsSpam . ' MODERATED='.$reply->Moderated .':' . $reply->Comment);
-        }
 
         $this->assertEquals(
             2,
@@ -673,7 +668,6 @@ class CommentTest extends FunctionalTest {
 
         $comment = $this->objFromFixture('Comment', 'firstComA');
         $children = $comment->allReplies()->toArray();
-        error_log(print_r($children,1));
         // Make the second child a child of the first
         // Make the third child a child of the second
         $reply1 = $children[0];
