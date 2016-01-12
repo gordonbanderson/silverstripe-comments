@@ -349,7 +349,11 @@ class CommentsExtensionTest extends SapphireTest {
         );
 
         $fields = $item->getCMSFields();
-        $this->assertFieldsForTab('Root.Settings', array('Comments', 'ModerationRequired'), $fields);
+        CommentTestHelper::assertFieldsForTab(
+            $this,
+            'Root.Settings',
+            array('Comments', 'ModerationRequired'), $fields
+        );
         $settingsTab = $fields->findOrMakeTab('Root.Settings');
         $settingsChildren = $settingsTab->getChildren();
         $this->assertEquals(2, $settingsChildren->count());
