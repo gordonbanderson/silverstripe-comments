@@ -67,11 +67,11 @@ class CommentListTest extends FunctionalTest {
 		$item = $this->objFromFixture('CommentableItem', 'first');
         $comments = $item->Comments();
         $ctr = 6;
-        // set CreatedAt times to avoid inconsistencies when CreatedAt trips over
+        // set Created times to avoid inconsistencies when Created trips over
         // into the next second during tests
         $now = time();
         foreach ($comments as $comment) {
-            $comment->CreatedAt = $now-$ctr*3600;
+            $comment->Created = $now-$ctr*3600;
             $comment->write();
             $ctr--;
         }
@@ -89,7 +89,7 @@ class CommentListTest extends FunctionalTest {
         $newComment2 = new Comment();
         $newComment2->Name = 'John Smith';
         $newComment2->Comment = 'This is another test comment';
-        $newComment2->CreatedAt = $now-2000;
+        $newComment2->Created = $now-2000;
         $newComment2->write();
 
         // test adding the same comment by ID
@@ -100,7 +100,7 @@ class CommentListTest extends FunctionalTest {
         // Check the order by testing the actual comments themselves
         $actualComments = array();
         foreach ($item->Comments() as $comment) {
-            error_log("{$comment->CreatedAt}\t{$comment->Comment}");
+            error_log("{$comment->Created}\t{$comment->Comment}");
             array_push($actualComments, $comment->Comment);
         }
         $expected = array(
