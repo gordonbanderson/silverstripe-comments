@@ -5,10 +5,10 @@ class CommentTestHelper {
     This only works if the last section is not a field group, e.g. a Comments
     field group inside of a Root.Settings tab will not work
      */
-    public static function assertFieldsForTab($tabName, $expected, $fields) {
+    public static function assertFieldsForTab($context, $tabName, $expected, $fields) {
         $tab = $fields->findOrMakeTab($tabName);
         $fields = $tab->FieldList();
-        $this->assertFieldNames($expected, $fields);
+        CommentTestHelper::assertFieldNames($context, $expected, $fields);
     }
 
     public static function assertFieldNames($context, $expected, $fields) {
