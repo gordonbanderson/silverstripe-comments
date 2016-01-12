@@ -305,22 +305,22 @@ class CommentsExtensionTest extends SapphireTest {
         $item->ProvideComments = true;
         $item->write();
         $fields = $item->getCMSFields();
-        $this->assertFieldsForTab( 'Root.Comments',
+        CommentTestHelper::assertFieldsForTab($this, 'Root.Comments',
             array('CommentsNewCommentsTab', 'CommentsCommentsTab', 'CommentsSpamCommentsTab'),
             $fields
         );
 
-        $this->assertFieldsForTab( 'Root.Comments.CommentsNewCommentsTab',
+        CommentTestHelper::assertFieldsForTab($this, 'Root.Comments.CommentsNewCommentsTab',
             array('NewComments'),
             $fields
         );
 
-        $this->assertFieldsForTab( 'Root.Comments.CommentsCommentsTab',
+        CommentTestHelper::assertFieldsForTab($this, 'Root.Comments.CommentsCommentsTab',
             array('ApprovedComments'),
             $fields
         );
 
-        $this->assertFieldsForTab( 'Root.Comments.CommentsSpamCommentsTab',
+        CommentTestHelper::assertFieldsForTab($this,  'Root.Comments.CommentsSpamCommentsTab',
             array('SpamComments'),
             $fields
         );
@@ -330,13 +330,14 @@ class CommentsExtensionTest extends SapphireTest {
             )
         );
         $fields = $item->getCMSFields();
-        $this->assertFieldsForTab('Root.Settings', array('Comments'), $fields);
+        CommentTestHelper::assertFieldsForTab($this, 'Root.Settings', array('Comments'), $fields);
         $settingsTab = $fields->findOrMakeTab('Root.Settings');
         $settingsChildren = $settingsTab->getChildren();
         $this->assertEquals(1, $settingsChildren->count());
         $fieldGroup = $settingsChildren->first();
         $fields = $fieldGroup->getChildren();
-        $this->assertFieldNames(
+        CommentTestHelper::assertFieldNames(
+            $this.
             array('ProvideComments', 'CommentsRequireLogin'),
             $fields
         );
@@ -354,33 +355,14 @@ class CommentsExtensionTest extends SapphireTest {
         $this->assertEquals(2, $settingsChildren->count());
         $fieldGroup = $settingsChildren->first();
         $fields = $fieldGroup->getChildren();
-        $this->assertFieldNames(
+        CommentTestHelper::assertFieldNames(
+            $this,
             array('ProvideComments', 'CommentsRequireLogin'),
             $fields
         );
 	}
 
-    /*
-    This only works if the last section is not a field group, e.g. a Comments
-    field group inside of a Root.Settings tab will not work
-     */
-    private function assertFieldsForTab($tabName, $expected, $fields) {
-        $tab = $fields->findOrMakeTab($tabName);
-        $fields = $tab->FieldList();
-        $this->assertFieldNames($expected, $fields);
-    }
 
-    private function assertFieldNames($expected, $fields) {
-        $actual = array();
-        foreach ($fields as $field) {
-            if (get_class($field) == 'FieldGroup') {
-                array_push($actual, $field->Name());
-            } else {
-                array_push($actual, $field->getName());
-            }
-        }
-        $this->assertEquals($expected, $actual);
-    }
 
     public function testDeprecatedMethods() {
         $item = $this->objFromFixture('CommentableItem', 'first');
