@@ -198,3 +198,16 @@ Comment:
     Moderated: 0
     IsSpam: 1
     BaseClass: CommentableItem
+
+# For testing requireDefaultRecords, comments in old format
+PageComment:
+    pc01:
+      Comment: First old comment
+      Name: John Smith Sr
+      NeedsModeration: false
+      URL: http://comment1.com
+    pc02:
+      Comment: Second old comment, needs moderated
+      Name: Sir Fred Jones MSc
+      NeedsModeration: true
+      URL: http://comment2.com
