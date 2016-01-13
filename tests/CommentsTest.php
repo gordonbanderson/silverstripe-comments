@@ -10,7 +10,8 @@ class CommentsTest extends FunctionalTest {
 	protected $extraDataObjects = array(
 		'CommentableItem',
 		'CommentableItemEnabled',
-		'CommentableItemDisabled'
+		'CommentableItemDisabled',
+        'PageComment'
 	);
 
 	public function setUp() {
@@ -596,7 +597,18 @@ class CommentsTest extends FunctionalTest {
     }
 
     public function testRequireDefaultRecords() {
-        $this->markTestSkipped('TODO');
+        $pc01 = $this->objFromFixture('PageComment', 'pc01');
+        $pc02 = $this->objFromFixture('PageComment', 'pc02');
+
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->requireDefaultRecords();
+
+        // check the moderation flag post requireDefaults
+        $c01 = Comment::get()->filter('Name', 'John Smith Sr')->first();
+        $this->assertEquals(1, $c01->Moderated);
+
+        $c02 = Comment::get()->filter('Name', 'Sir Fred Jones MSc')->first();
+        $this->assertEquals(0, $c02->Moderated);
     }
 
     public function testLink() {
@@ -722,54 +734,6 @@ class CommentsTest extends FunctionalTest {
         // visitor can view
         $this->logInAs('visitor');
         $this->assertFalse($comment->canCreate());
-    }
-
-    public function testCanView() {
-        $comment = $this->objFromFixture('Comment', 'firstComA');
-
-        // admin can view
-        $this->logInAs('commentadmin');
-        $this->assertTrue($comment->canView());
-
-        // visitor can view
-        $this->logInAs('visitor');
-        $this->assertTrue($comment->canView());
-
-        $comment->ParentID = 0;
-        $comment->write();
-        $this->assertFalse($comment->canView());
-    }
-
-    public function testCanEdit() {
-        $comment = $this->objFromFixture('Comment', 'firstComA');
-
-        // admin can edit
-        $this->logInAs('commentadmin');
-        $this->assertTrue($comment->canEdit());
-
-        // visitor cannot
-        $this->logInAs('visitor');
-        $this->assertFalse($comment->canEdit());
-
-        $comment->ParentID = 0;
-        $comment->write();
-        $this->assertFalse($comment->canEdit());
-    }
-
-    public function testCanDelete() {
-        $comment = $this->objFromFixture('Comment', 'firstComA');
-
-        // admin can delete
-        $this->logInAs('commentadmin');
-        $this->assertTrue($comment->canDelete());
-
-        // visitor cannot
-        $this->logInAs('visitor');
-        $this->assertFalse($comment->canDelete());
-
-        $comment->ParentID = 0;
-        $comment->write();
-        $this->assertFalse($comment->canDelete());
     }
 
     public function testGetMember() {
@@ -1307,4 +1271,15 @@ class CommentableItem_Controller extends Controller implements TestOnly {
 	public function index() {
 		return CommentableItem::get()->first()->CommentsForm();
 	}
+}
+
+
+class PageComment extends DataObject implements TestOnly {
+    private static $db = array(
+        "Name" => "Varchar(200)",
+        "Comment" => "Text",
+        "Email" => "Varchar(200)",
+        "URL" => "Varchar(255)",
+        'NeedsModeration' => 'Boolean'
+    );
 }
