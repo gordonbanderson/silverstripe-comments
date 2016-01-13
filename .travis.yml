@@ -18,10 +18,6 @@ env:
     # Set to 1 in the matrix to enable code coverage
     - COVERAGE=0
 
-    # Set to 1 in the matrix to install htmlpurifier
-    - PURIFIER=0
-
-
 matrix:
   include:
     - php: 5.6
@@ -39,9 +35,9 @@ matrix:
 before_script:
   - phpenv rehash
   - composer self-update || true
-  - git clone https://github.com/gordonbanderson/silverstripe-travis-support.git --branch suggest ~/travis-support
+  - git clone https://github.com/gordonbanderson/silverstripe-travis-support.git --branch multiple_require_options ~/travis-support
 # - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
-  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss --install-suggested yes
+  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss --require "ezyang/htmlpurifier:4.*" --require "silverstripe/cms:~3.1"
   - cd ~/builds/ss
 
 script:
