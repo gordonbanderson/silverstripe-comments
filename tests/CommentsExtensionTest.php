@@ -268,20 +268,20 @@ class CommentsExtensionTest extends SapphireTest {
         }
 
         $this->assertEquals(
-            $this->objFromFixture('Comment', 'firstComA'),
-            $results[0]
+            $this->objFromFixture('Comment', 'firstComA')->Comment,
+            $results[0]->Comment
         );
         $this->assertEquals(
-            $this->objFromFixture('Comment', 'firstComAChild1'),
-            $results[1]
+            $this->objFromFixture('Comment', 'firstComAChild1')->Comment,
+            $results[1]->Comment
         );
         $this->assertEquals(
-            $this->objFromFixture('Comment', 'firstComAChild2'),
-            $results[2]
+            $this->objFromFixture('Comment', 'firstComAChild2')->Comment,
+            $results[2]->Comment
         );
         $this->assertEquals(
-            $this->objFromFixture('Comment', 'firstComAChild3'),
-            $results[3]
+            $this->objFromFixture('Comment', 'firstComAChild3')->Comment,
+            $results[3]->Comment
         );
 
         $this->assertEquals(4, sizeof($results));
