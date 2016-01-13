@@ -130,6 +130,8 @@ class Comment extends DataObject {
 				while($pageComment = $comments->nextRecord()) {
 					// create a new comment from the older page comment
 					$comment = new Comment();
+					unset($pageComment['ID']);
+					unset($pageComment['ClassName']);
 					$comment->update($pageComment);
 
 					// set the variables which have changed
