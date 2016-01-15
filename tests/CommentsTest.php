@@ -567,12 +567,6 @@ class CommentsTest extends FunctionalTest {
 		$this->assertFalse((bool)$obj->CommentsRequireLogin);
 	}
 
-
-
-    public function testOnBeforeWrite() {
-        $this->markTestSkipped('TODO');
-    }
-
     /*
     When a parent comment is deleted, remove the children
      */
@@ -936,11 +930,6 @@ class CommentsTest extends FunctionalTest {
             'my comment',
             $comment->purifyHtml($dirtyHTML)
         );
-    }
-
-
-    public function testGetHtmlPurifierService() {
-        $this->markTestSkipped('TODO');
     }
 
     public function testGravatar() {
