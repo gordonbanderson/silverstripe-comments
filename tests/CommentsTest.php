@@ -214,48 +214,6 @@ class CommentsTest extends FunctionalTest {
 		$this->assertTrue($item2->canPostComment());
 
 	}
-
-	public function testCanView() {
-		$visitor = $this->objFromFixture('Member', 'visitor');
-		$admin = $this->objFromFixture('Member', 'commentadmin');
-		$comment = $this->objFromFixture('Comment', 'firstComA');
-
-		$this->assertTrue($comment->canView($visitor),
-			'Unauthenticated members can view comments associated to a object with ProvideComments=1'
-		);
-		$this->assertTrue($comment->canView($admin),
-			'Admins with CMS_ACCESS_CommentAdmin permissions can view comments associated to a page with ProvideComments=1'
-		);
-
-		$disabledComment = $this->objFromFixture('Comment', 'disabledCom');
-
-		$this->assertFalse($disabledComment->canView($visitor),
-			'Unauthenticated members can not view comments associated to a object with ProvideComments=0'
-		);
-
-		$this->assertTrue($disabledComment->canView($admin),
-			'Admins with CMS_ACCESS_CommentAdmin permissions can view comments associated to a page with ProvideComments=0'
-		);
-	}
-
-	public function testCanEdit() {
-		$visitor = $this->objFromFixture('Member', 'visitor');
-		$admin = $this->objFromFixture('Member', 'commentadmin');
-		$comment = $this->objFromFixture('Comment', 'firstComA');
-
-		$this->assertFalse($comment->canEdit($visitor));
-		$this->assertTrue($comment->canEdit($admin));
-	}
-
-	public function testCanDelete() {
-		$visitor = $this->objFromFixture('Member', 'visitor');
-		$admin = $this->objFromFixture('Member', 'commentadmin');
-		$comment = $this->objFromFixture('Comment', 'firstComA');
-
-		$this->assertFalse($comment->canEdit($visitor));
-		$this->assertTrue($comment->canEdit($admin));
-	}
-
 	public function testDeleteComment() {
 		// Test anonymous user
 		if($member = Member::currentUser()) $member->logOut();
