@@ -261,7 +261,24 @@ class CommentsExtensionTest extends SapphireTest {
 
 	public function testPagedComments() {
         $item = $this->objFromFixture('CommentableItem', 'first');
+        // Ensure Created times are set, as order not guaranteed if all set to 0
+        $comments = $item->PagedComments()->sort('ID');
+        $ctr = 0;
+        $timeBase = time()-10000;
+        foreach ($comments as $comment) {
+            $comment->Created = $timeBase + $ctr * 1000;
+            $comment->write();
+
+            error_log('COMMENT:' . $comment->ID . ', ' . $comment->Created . ' - ' . $comment->Comment);
+            $ctr++;
+        }
+
         $results = $item->PagedComments()->toArray();
+
+        error_log('RESULT----');
+        foreach ($results as $comment) {
+            error_log('COMMENT:' . $comment->ID . ', ' . $comment->Created . ' - ' . $comment->Comment);
+        }
 
         foreach ($results as $result) {
            $result->sourceQueryParams = null;
@@ -269,19 +286,19 @@ class CommentsExtensionTest extends SapphireTest {
 
         $this->assertEquals(
             $this->objFromFixture('Comment', 'firstComA')->Comment,
-            $results[0]->Comment
+            $results[3]->Comment
         );
         $this->assertEquals(
             $this->objFromFixture('Comment', 'firstComAChild1')->Comment,
-            $results[1]->Comment
-        );
-        $this->assertEquals(
-            $this->objFromFixture('Comment', 'firstComAChild2')->Comment,
             $results[2]->Comment
         );
         $this->assertEquals(
+            $this->objFromFixture('Comment', 'firstComAChild2')->Comment,
+            $results[1]->Comment
+        );
+        $this->assertEquals(
             $this->objFromFixture('Comment', 'firstComAChild3')->Comment,
-            $results[3]->Comment
+            $results[0]->Comment
         );
 
         $this->assertEquals(4, sizeof($results));
