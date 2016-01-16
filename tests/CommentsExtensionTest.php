@@ -205,7 +205,7 @@ class CommentsExtensionTest extends SapphireTest {
         $expected = '<input type="text" name="URL" class="text" id="Form_CommentsForm_URL" data-msg-url="Please enter a valid URL"';
         $this->assertContains($expected, $cf);
 
-        $expected = '<input type="hidden" name="ParentID" value="1" class="hidden" id="Form_CommentsForm_ParentID" />';
+        $expected = '<input type="hidden" name="ParentID" value="' . $item->ID . '" class="hidden" id="Form_CommentsForm_ParentID" />';
         $this->assertContains($expected, $cf);
 
         $expected = '<textarea name="Comment" class="textarea" id="Form_CommentsForm_Comment" required="required"';
