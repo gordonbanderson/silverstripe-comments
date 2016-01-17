@@ -28,26 +28,30 @@ class CommentingTest extends SapphireTest {
             'commentable_item'
         );
 
+        $config = Config::inst()->get(
+            'CommentableItem',
+            'comments'
+        );
+        $actual = $config['comments_holder_id'];
+
         $this->assertEquals(
             'commentable_item',
-            Config::inst()->get(
-                'CommentableItem',
-                'comments'
-            )['comments_holder_id']
+            $actual
         );
-
         Commenting::set_config_value(
             'all',
             'comments_holder_id',
             'all_items_actually_commentsextension'
         );
 
+         $config = Config::inst()->get(
+            'CommentsExtension',
+            'comments'
+        );
+        $actual = $config['comments_holder_id'];
         $this->assertEquals(
             'all_items_actually_commentsextension',
-            Config::inst()->get(
-                'CommentsExtension',
-                'comments'
-            )['comments_holder_id']
+            $actual
         );
 	}
 
