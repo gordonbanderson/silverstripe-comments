@@ -110,22 +110,28 @@ class CommentingTest extends SapphireTest {
 
     public function test_add() {
         Commenting::add('Member', array('comments_holder_id' => 'test_add_value'));
-        $this->assertEquals(
-            'test_add_value',
-            Config::inst()->get(
+
+        $config = Config::inst()->get(
                 'Member',
                 'comments'
-            )['comments_holder_id']
+            );
+        $actual = $config['comments_holder_id'];
+        $this->assertEquals(
+            'test_add_value',
+            $actual
         );
 
-        // no settings updated
         Commenting::add('Member');
-        $this->assertEquals(
-            'test_add_value',
-            Config::inst()->get(
+
+        $config = Config::inst()->get(
                 'Member',
                 'comments'
-            )['comments_holder_id']
+            );
+        $actual = $config['comments_holder_id'];
+        // no settings updated
+        $this->assertEquals(
+            'test_add_value',
+            $actual
         );
 
         $this->setExpectedException('InvalidArgumentException', "\$settings needs to be an array or null");
