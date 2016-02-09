@@ -249,7 +249,9 @@ class CommentsExtensionTest extends SapphireTest {
                 'framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js',
                 'framework/thirdparty/jquery-validate/lib/jquery.form.js',
                 'comments/thirdparty/jquery-validate/jquery.validate.min.js',
-                'comments/javascript/CommentsInterface.js'
+                'comments/javascript/CommentsInterface.js',
+                'comments/javascript/jquery.timeago.js',
+                'comments/javascript/comments.timeago.js'
             ),
             $backend->get_javascript()
         );
