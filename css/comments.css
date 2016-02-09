@@ -112,6 +112,12 @@
   white-space: pre-line;
   word-wrap: break-word;
 }
+
+.comment .timeago {
+  color: #999;
+  padding-left: 1em;
+  padding-right: 1em;
+}
 /* line 119, ../scss/comments.scss */
 .comment .comment-text p:last-child {
   margin-bottom: 0;
