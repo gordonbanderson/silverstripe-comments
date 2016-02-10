@@ -424,10 +424,17 @@ class CommentsExtension extends DataExtension {
 			Requirements::javascript(COMMENTS_THIRDPARTY . '/jquery-validate/jquery.validate.min.js');
 			Requirements::javascript('comments/javascript/CommentsInterface.js');
 			Requirements::javascript('comments/javascript/jquery.timeago.js');
-			// Enable language like this (exxample only for th)
-			// Requirements::javascript('comments/javascript/timeago-locales/jquery.timeago.th.js');
-			Requirements::javascript('comments/javascript/comments.timeago.js');
-		}
+
+            // Use current locale or fall back to English
+            $locale = substr(i18n::default_locale(), 0, 2);
+            $available = Config::inst()->get('TimeAgo', 'locales');
+            if (!in_array($locale, $available)) {
+                $locale = 'en';
+            }
+			Requirements::javascript('comments/javascript/timeago-locales/jquery.timeago.' . $locale . '.js');
+
+            Requirements::javascript('comments/javascript/comments.timeago.js');
+        }
 
 		$controller = CommentingController::create();
 		$controller->setOwnerRecord($this->owner);
