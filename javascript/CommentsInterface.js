@@ -186,6 +186,7 @@
 			e.preventDefault();
 		});
 
+
 		/**
 		 * Ajax pagination
 		 */
@@ -212,5 +213,3 @@
 		});*/
 	});
 })(jQuery);
-
-
