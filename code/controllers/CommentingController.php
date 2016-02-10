@@ -241,7 +241,6 @@ class CommentingController extends Controller {
 			return Security::permissionFailure($this, 'You do not have permission to edit this comment');
 		}
 		if(!$comment->getSecurityToken()->checkRequest($this->request)) return $this->httpError(400);
-
 		$comment->markSpam();
         return $this->renderChangedCommentState($comment);
 	}
@@ -591,7 +590,7 @@ class CommentingController extends Controller {
 		} else if(!$comment->Moderated) {
 			// Display the "awaiting moderation" text
 			$holder = $this->getOption('comments_holder_id');
-			$hash = "{$holder}_PostCommentForm_error";
+			$hash = "moderated";
 		} else {
 			// Link to the moderated, non-spam comment
 			$hash = $comment->Permalink();
