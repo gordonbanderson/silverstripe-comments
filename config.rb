@@ -5,7 +5,6 @@ http_path = "/"
 css_dir = "css"
 sass_dir = "scss"
 javascripts_dir = "javascript"
-sourcemap = "true"
 
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed
