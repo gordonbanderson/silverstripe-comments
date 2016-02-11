@@ -80,7 +80,7 @@ class CommentsExtension extends DataExtension {
 	 */
 	public function populateDefaults() {
 		$defaults = $this->owner->config()->defaults;
-		
+
 		// Set if comments should be enabled by default
 		if(isset($defaults['ProvideComments'])) {
 			$this->owner->ProvideComments = $defaults['ProvideComments'];
@@ -292,7 +292,7 @@ class CommentsExtension extends DataExtension {
 	public function getCommentsEnabled() {
 		// Don't display comments form for pseudo-pages (such as the login form)
 		if(!$this->owner->exists()) return false;
-		
+
 		// Determine which flag should be used to determine if this is enabled
 		if($this->owner->getCommentsOption('enabled_cms')) {
 			return $this->owner->ProvideComments;
@@ -423,7 +423,18 @@ class CommentsExtension extends DataExtension {
 			Requirements::javascript(THIRDPARTY_DIR . '/jquery-validate/lib/jquery.form.js');
 			Requirements::javascript(COMMENTS_THIRDPARTY . '/jquery-validate/jquery.validate.min.js');
 			Requirements::javascript('comments/javascript/CommentsInterface.js');
-		}
+			Requirements::javascript('comments/javascript/jquery.timeago.js');
+
+            // Use current locale or fall back to English
+            $locale = substr(i18n::default_locale(), 0, 2);
+            $available = Config::inst()->get('TimeAgo', 'locales');
+            if (!in_array($locale, $available)) {
+                $locale = 'en';
+            }
+			Requirements::javascript('comments/javascript/timeago-locales/jquery.timeago.' . $locale . '.js');
+
+            Requirements::javascript('comments/javascript/comments.timeago.js');
+        }
 
 		$controller = CommentingController::create();
 		$controller->setOwnerRecord($this->owner);

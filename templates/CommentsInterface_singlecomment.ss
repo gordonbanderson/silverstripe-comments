@@ -5,14 +5,14 @@
 		<% else %>
 			<span class="author">$AuthorName.XML</span>
 		<% end_if %>
-		<span class="date">$Created.Nice ($Created.Ago)</span>
+		<span class="date">$Created.Nice <% if $JavaScriptEnabled %><time class="timeago" datetime="$Created.format(c)">$Created.Nice</time><% end_if %></span>
 		<% if $Gravatar %>
 			<img class="gravatar" src="$Gravatar.ATT" alt="Gravatar for $Name.ATT" title="Gravatar for $Name.ATT" />
 		<% end_if %>
 	</p>
 <% end_if %>
 
-<div class="comment-text" id="<% if $isPreview %>comment-preview<% end_if %>">
+<div class="comment-text" id="<% if $isPreview %>comment-preview<% else %>$Permalink<% end_if %>">
 	<p>$EscapedComment</p>
 </div>
 
