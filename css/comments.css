@@ -21,60 +21,66 @@
   line-height: 40px;
   margin-bottom: 0;
 }
-/* line 23, ../scss/comments.scss */
+/* line 24, ../scss/comments.scss */
+.comments-holder-container #moderated {
+  border: solid #999 1px;
+  padding: 20px;
+  font-style: italic;
+}
+/* line 30, ../scss/comments.scss */
 .comments-holder-container .comments-list {
   margin: 0;
 }
-/* line 27, ../scss/comments.scss */
+/* line 34, ../scss/comments.scss */
 .comments-holder-container .comment-count {
   margin: 15px 0;
 }
-/* line 32, ../scss/comments.scss */
+/* line 39, ../scss/comments.scss */
 .comments-holder-container .commenting-area {
   margin-top: 50px;
 }
-/* line 35, ../scss/comments.scss */
+/* line 42, ../scss/comments.scss */
 .comments-holder-container .commenting-area label.left {
   font-weight: normal;
 }
-/* line 40, ../scss/comments.scss */
+/* line 47, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed {
   margin-top: 4em;
   text-align: right;
 }
-/* line 44, ../scss/comments.scss */
+/* line 51, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed .action-links {
   margin: 20px 0 10px;
 }
-/* line 47, ../scss/comments.scss */
+/* line 54, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed .action-links li {
   display: inline;
   list-style-type: none;
   margin-left: 20px;
 }
-/* line 52, ../scss/comments.scss */
+/* line 59, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed .action-links li:first-child {
   margin-left: 0;
 }
-/* line 56, ../scss/comments.scss */
+/* line 63, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed .action-links li.comment-reply-action {
   float: right;
 }
-/* line 61, ../scss/comments.scss */
+/* line 68, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed .action-links a {
   background-image: none;
 }
-/* line 64, ../scss/comments.scss */
+/* line 71, ../scss/comments.scss */
 .comments-holder-container .commenting-rss-feed .action-links a::first-letter {
   text-transform: capitalize;
 }
-/* line 71, ../scss/comments.scss */
+/* line 78, ../scss/comments.scss */
 .comments-holder-container .no-comments-yet {
   display: inline-block;
   margin-top: 10px;
 }
 
-/* line 78, ../scss/comments.scss */
+/* line 85, ../scss/comments.scss */
 .comment {
   clear: both;
   list-style-type: none;
@@ -82,7 +88,7 @@
   padding: 20px 0 20px 0;
   position: relative;
 }
-/* line 86, ../scss/comments.scss */
+/* line 93, ../scss/comments.scss */
 .comment.author-comment:after {
   content: 'Author';
   float: right;
@@ -92,15 +98,15 @@
   font-size: 1em;
   font-weight: bold;
 }
-/* line 96, ../scss/comments.scss */
+/* line 103, ../scss/comments.scss */
 .comment.author-comment > .comment-text {
   border: 1px solid blue;
 }
-/* line 103, ../scss/comments.scss */
+/* line 110, ../scss/comments.scss */
 .comment.spam .comment-text {
   border: 1px dashed orange;
 }
-/* line 108, ../scss/comments.scss */
+/* line 115, ../scss/comments.scss */
 .comment img.gravatar {
   float: left;
   margin: 20px;
@@ -108,7 +114,7 @@
   height: 90px;
   border: none;
 }
-/* line 116, ../scss/comments.scss */
+/* line 123, ../scss/comments.scss */
 .comment .comment-text {
   background-color: #fff;
   border: 1px solid #ddd;
@@ -121,84 +127,78 @@
   white-space: pre-line;
   word-wrap: break-word;
 }
-
-.comment .timeago {
-  color: #999;
-  padding-left: 1em;
-  padding-right: 1em;
-}
-/* line 128, ../scss/comments.scss */
+/* line 135, ../scss/comments.scss */
 .comment .comment-text p:last-child {
   margin-bottom: 0;
 }
-/* line 133, ../scss/comments.scss */
+/* line 140, ../scss/comments.scss */
 .comment .comment-text.hasGravatar {
   padding: 0 20px 0 130px;
   min-height: 130px;
 }
-/* line 141, ../scss/comments.scss */
+/* line 148, ../scss/comments.scss */
 .comment .date {
   font-size: 16px;
 }
-/* line 144, ../scss/comments.scss */
+/* line 151, ../scss/comments.scss */
 .comment .date:before {
   content: '\0000a0\0000a0\0000a0\0000a0';
 }
-/* line 150, ../scss/comments.scss */
+/* line 157, ../scss/comments.scss */
 .comment.unmoderated > .comment-text {
   border: 1px solid yellow;
 }
-/* line 155, ../scss/comments.scss */
+/* line 162, ../scss/comments.scss */
 .comment .info {
   margin-bottom: 10px;
 }
-/* line 159, ../scss/comments.scss */
+/* line 166, ../scss/comments.scss */
 .comment.spam .comment {
   border: 1px dashed orange;
   border-radius: 4px;
   padding: 2.5em 1em 1em;
 }
-/* line 165, ../scss/comments.scss */
+/* line 172, ../scss/comments.scss */
 .comment .comment-replies-container {
   clear: both;
   padding-left: 10px;
   margin: 80px 0 0 0;
   border-left: 1px dashed #999;
 }
-/* line 171, ../scss/comments.scss */
+/* line 178, ../scss/comments.scss */
 .comment .comment-replies-container .comment-reply-form-holder {
   padding: 0 10px;
 }
-/* line 174, ../scss/comments.scss */
+/* line 181, ../scss/comments.scss */
 .comment .comment-replies-container .comment-replies-holder {
   padding: 0 0 0 10px;
 }
 
-/* line 180, ../scss/comments.scss */
+/* line 187, ../scss/comments.scss */
 .comments-list.root-level {
   margin-left: 0;
 }
 
-/* line 184, ../scss/comments.scss */
+/* line 191, ../scss/comments.scss */
 .comment-reply-link {
   float: right;
 }
 
-/* line 188, ../scss/comments.scss */
+/* line 195, ../scss/comments.scss */
 .comment-moderation-options {
   float: left;
 }
 
-/* line 192, ../scss/comments.scss */
+/* line 199, ../scss/comments.scss */
 .comment-action-links {
   margin: 20px 0 10px;
 }
-/* line 195, ../scss/comments.scss */
+/* line 202, ../scss/comments.scss */
 .comment-action-links a:not(:last-child) {
   margin-right: 12px;
 }
 
-/* line 200, ../scss/comments.scss */
+/* line 207, ../scss/comments.scss */
 .commenting-rss-feed ul {
   list-style: none;
 }
