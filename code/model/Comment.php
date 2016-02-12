@@ -700,6 +700,22 @@ class Comment extends DataObject {
 		return $list;
 	}
 
+    /**
+    * Determine if JavaScript is enabled, used in templates
+    * @return boolean true iff JavaScript enabled with include_js = true in config
+    */
+    public function getJavaScriptEnabled() {
+        return $this->getOption('include_js');
+    }
+
+    public function ShowReplyToForm() {
+        $controller = Controller::curr();
+        $request = $controller->getRequest();
+        $replyTo = $request->getVar('replyTo');
+        $result = $replyTo == $this->ID;
+        return $result;
+    }
+
 	/**
 	 * Returns the list of replies, with spam and unmoderated items excluded, for use in the frontend
 	 *
