@@ -33,7 +33,11 @@
 				<% end_if %>
 			</div>
 			<% if $RepliesEnabled %>
-				<a class="comment-reply-link" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
+                <% if $JavaScriptEnabled %>
+				    <a class="comment-reply-link" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
+                <% else %>
+                    <a class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
+                <% end_if %>
 			<% end_if %>
 		</div>
 	<% end_if %>
