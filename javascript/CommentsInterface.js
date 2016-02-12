@@ -138,7 +138,7 @@
 		 * this inclues the spam and approve links
 		 */
 
-		$('..comments-holder .comments-list').on('click', 'div.comment-moderation-options a', function(e) {
+		$('.comments-holder .comments-list').on('click', 'div.comment-moderation-options a', function(e) {
 			var link = $(this);
             if (link.hasClass('delete')) {
                 var confirmation = window.confirm("Are you sure?");
