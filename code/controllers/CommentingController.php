@@ -241,12 +241,8 @@ class CommentingController extends Controller {
 			return Security::permissionFailure($this, 'You do not have permission to edit this comment');
 		}
 		if(!$comment->getSecurityToken()->checkRequest($this->request)) return $this->httpError(400);
-
 		$comment->markSpam();
-
-		return $this->request->isAjax()
-			? $comment->renderWith('CommentsInterface_singlecomment')
-			: $this->redirectBack();
+        $this->renderChangedCommentState($comment);
 	}
 
 	/**
@@ -261,10 +257,7 @@ class CommentingController extends Controller {
 		if(!$comment->getSecurityToken()->checkRequest($this->request)) return $this->httpError(400);
 
 		$comment->markApproved();
-
-		return $this->request->isAjax()
-			? $comment->renderWith('CommentsInterface_singlecomment')
-			: $this->redirectBack();
+        $this->renderChangedCommentState($comment);
 	}
 
 	/**
@@ -279,11 +272,36 @@ class CommentingController extends Controller {
 		if(!$comment->getSecurityToken()->checkRequest($this->request)) return $this->httpError(400);
 
 		$comment->markApproved();
-
-		return $this->request->isAjax()
-			? $comment->renderWith('CommentsInterface_singlecomment')
-			: $this->redirectBack();
+        $this->renderChangedCommentState($comment);
 	}
+
+    /**
+     * Redirect back to referer if available, ensuring that only site URLs
+     * are allowed to avoid phishing.  If it's an AJAX request render the
+     * comment in it's new state
+     */
+    private function renderChangedCommentState($comment) {
+        $referer = $this->request->getHeader('Referer');
+
+        // Render comment using AJAX
+        if ($this->request->isAjax()) {
+            $comment->renderWith('CommentsInterface_singlecomment');
+        } else {
+            // Redirect to either the comment or start of the page
+            if (empty($referer)) {
+                $this->redirectBack();
+            } else {
+                // Redirect to the comment, but check for phishing
+                $url = $referer . '#comment-' . $comment->ID;
+                // absolute redirection URLs not located on this site may cause phishing
+                if(Director::is_site_url($url)) {
+                    return $this->redirect($url);
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
 
 	/**
 	 * Returns the comment referenced in the URL (by ID). Permission checking
