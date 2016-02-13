@@ -17,9 +17,9 @@
     <% if $RepliesEnabled %>
         <div class="replyButtonContainer">
         <% if $JavaScriptEnabled %>
-            <a class="comment-reply-link" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
+            <a class="comment-reply-link btn" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
         <% else %>
-            <a class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
+            <a class="comment-reply-link btn" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
         <% end_if %>
         </div>
 

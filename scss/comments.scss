@@ -151,17 +151,11 @@ $levelIndentation: 20px;
     }
 
     .comment-text .replyButtonContainer {
-        padding-bottom: 10px;
+        padding-bottom: 20px;
     }
 
     .comment-text .comment-reply-link {
-        background: #999;
-        color: white;
-        padding: 6px 10px 4px;
-        margin: 0px;
-        border: solid #777 1px;
-        border: solid #777 1px;
-        text-transform: uppercase;
+        float: right;
     }
 
 	.date {
