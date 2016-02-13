@@ -1,3 +1,6 @@
+$infoBorderSize: 2px;
+$levelIndentation: 20px;
+
 .comments-holder-container {
 	clear: both;
 
@@ -80,6 +83,12 @@
 	}
 }
 
+.commentWrapper {
+    background: #f7f7f7;
+            border: 1px solid #ddd;
+
+}
+
 // A published comment
 .comment {
 	clear:both;
@@ -105,32 +114,28 @@
 
 	}
 
-	&.spam {
-		.comment-text {
-			border: 1px dashed orange;
-		}
+	.commentWrapper.spam {
+	   border: $infoBorderSize dashed red;
 	}
 
     img.gravatar {
         float: left;
-        margin: 20px;
-        width: 90px;
-        height: 90px;
+        margin: 20px 0 20px 20px;
         border: none;
     }
 
 	.comment-text {
-		background-color: #fff;
-		border: 1px solid #ddd;
+		//background-color: #fff;
+		//border: 1px solid #ddd;
 		box-shadow: none;
 		margin: 0;
 		padding: 0 20px 0 20px;
-        min-height: 130px;
-		padding: 0 15% 0 20px;
-		white-space: pre;
-		white-space: pre-wrap;
-		white-space: pre-line;
-		word-wrap: break-word;
+
+        //min-height: 130px;
+		//white-space: pre;
+		//white-space: pre-wrap;
+		//white-space: pre-line;
+		//word-wrap: break-word;
 
 		p:last-child {
 			margin-bottom: 0;
@@ -139,41 +144,55 @@
 
     .comment-text.hasGravatar {
         // leave enough space on the left for the default gravatar size
-        padding: 0 20px 0 130px;
+        padding: 20px 20px 20px 120px;
 
         // Ensure there is enough vertical space for the Gravatar
-        min-height: 130px;
+        // min-height: 130px;
+    }
+
+    .comment-text .replyButtonContainer {
+        padding-bottom: 10px;
+    }
+
+    .comment-text .comment-reply-link {
+        background: #999;
+        color: white;
+        padding: 6px 10px 4px;
+        margin: 0px;
+        border: solid #777 1px;
+        border: solid #777 1px;
+        text-transform: uppercase;
     }
 
 	.date {
 		font-size: 16px;
+
+        color: #999;
 
 		&:before {
 			content: '\0000a0\0000a0\0000a0\0000a0';
 		}
 	}
 
-	&.unmoderated {
-		> .comment-text {
-			border: 1px solid yellow;
-		}
-	}
+    .commentWrapper.unmoderated {
+       border: $infoBorderSize dashed orange;
+    }
 
 	.info {
 		margin-bottom: 10px;
 	}
 
 	&.spam .comment {
-		border: 1px dashed orange;
-		border-radius: 4px;
-		padding: 2.5em 1em 1em;
+		//border: $infoBorderSize dashed orange;
+		//border-radius: 4px;
+		//padding: 2.5em 1em 1em;
 	}
 
 	.comment-replies-container {
 		clear: both;
-		padding-left: 10px;
-		margin: 80px 0 0 0;
-		border-left: 1px dashed #999;
+		padding-left: $levelIndentation;
+		margin: 0px 0 0 0;
+		//border-left: 1px dashed #999;
 
 		.comment-reply-form-holder {
 			padding: 0 10px; // Prevent clipping issues on slideUp/Down

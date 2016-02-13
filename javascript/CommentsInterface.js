@@ -58,24 +58,6 @@
 		});
 
 		/**
-		 * Comment reply form
-		 */
-		$( ".comment-replies-container .comment-reply-form-holder" ).entwine({
-			onmatch: function() {
-				// If and only if this is not the currently selected form, hide it on page load
-				var selectedHash = window.document.location.hash.substr(1),
-					form = $(this).children('.reply-form');
-				if( !selectedHash || selectedHash !== form.prop( 'id' ) ) {
-					this.hide();
-				}
-				this._super();
-			},
-			onunmatch: function() {
-				this._super();
-			}
-		});
-
-		/**
 		 * Toggle on/off reply form
 		 */
 		$( ".comment-reply-link" ).entwine({
@@ -91,6 +73,9 @@
 				} else {
 					allForms.not(form).slideUp();
 					form.slideDown();
+                    $('html, body').animate({
+                            scrollTop: $(e.target).offset().top - 30
+                        }, 200);
 				}
 			}
 		});
