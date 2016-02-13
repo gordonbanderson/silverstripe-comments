@@ -666,7 +666,8 @@ class Comment extends DataObject {
 
 		// Check if depth is limited
 		$maxLevel = $this->getOption('nested_depth');
-		return !$maxLevel || $this->Depth < $maxLevel;
+        $notSpam = ($this->SpamClass() == 'notspam');
+		return $notSpam && (!$maxLevel || $this->Depth < $maxLevel);
 	}
 
 	/**
