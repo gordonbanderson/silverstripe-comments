@@ -231,7 +231,7 @@ class CommentsTest extends FunctionalTest {
 
 		// Test authenticated user
 		$this->logInAs('commentadmin');
-		$comment = $this->objFromFixture('Comment', 'firstComA');
+		$comment = $this->objFromFixture('Comment', 'thirdComF');
 		$commentID = $comment->ID;
 		$adminComment1Link = $comment->DeleteLink();
 		$this->assertContains('CommentingController/delete/'.$commentID.'?t=', $adminComment1Link);
@@ -542,9 +542,12 @@ class CommentsTest extends FunctionalTest {
 
         $comment->delete();
 
-        // assert that the new child been deleted
-        $this->assertFalse(DataObject::get_by_id('Comment', $commentID));
-        $this->assertFalse(DataObject::get_by_id('Comment', $childCommentID));
+        $reloadedParent = DataObject::get_by_id('Comment', $commentID);
+        $this->assertEquals(1, $reloadedParent->MarkedAsDeleted);
+
+        // assert that the new child not been deleted as parent exists
+        $this->assertFalse(empty($reloadedParent));
+        $this->assertFalse(empty(DataObject::get_by_id('Comment', $childCommentID)));
     }
 
     public function testRequireDefaultRecords() {
@@ -584,6 +587,7 @@ class CommentsTest extends FunctionalTest {
             'BaseClass' => 'Base Class',
             'Moderated' => 'Modéré?',
             'IsSpam' => 'Spam?',
+            'MarkedAsDeleted' => 'Marked As Deleted',
             'ParentID' => 'Parent ID',
             'AllowHtml' => 'Allow Html',
             'SecretToken' => 'Secret Token',
@@ -605,6 +609,7 @@ class CommentsTest extends FunctionalTest {
             'BaseClass' => 'Base Class',
             'Moderated' => 'Moderated?',
             'IsSpam' => 'Spam?',
+            'MarkedAsDeleted' => 'Marked As Deleted',
             'ParentID' => 'Parent ID',
             'AllowHtml' => 'Allow Html',
             'SecretToken' => 'Secret Token',
@@ -1091,6 +1096,66 @@ class CommentsTest extends FunctionalTest {
 
         $this->assertEquals(0, $comment->PagedReplies()->count());
     }
+
+    public function testHasChildren() {
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $childComments = Comment::get()->filter('ParentID', $comment->ID);
+        $this->assertEquals(4, $childComments->count());
+        $this->assertTrue($comment->hasChildren());
+
+        $comment2 = $this->objFromFixture('Comment', 'secondComB');
+        $childComments2 = Comment::get()->filter('ParentID', $comment2->ID);
+        $this->assertEquals(0, $childComments2->count());
+        $this->assertFalse($comment2->hasChildren());
+
+    }
+
+    public function testDeleteWithChildren() {
+        // assert the number of comments
+        $this->assertEquals(23, Comment::get()->count());
+
+        // check firstComA has four children
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $childComments = Comment::get()->filter('ParentID', $comment->ID);
+        $this->assertEquals(4, $childComments->count());
+
+        $this->assertEquals(0, $comment->MarkedAsDeleted);
+
+        // delete it
+        $comment->delete();
+
+        // should still have same number of comments, only now it will be
+        // marked as deleted
+        $this->assertEquals(23, Comment::get()->count());
+        $this->assertEquals(1, $comment->MarkedAsDeleted);
+
+        // Delete a leaf, should reduce number by 1
+        $comment = $this->objFromFixture('Comment', 'testCommentList4');
+        $comment->delete();
+        $this->assertEquals(22, Comment::get()->count());
+    }
+
+    public function testSpamWithChildren() {
+        // assert the number of comments
+        $nComments = Comment::get()->count();
+        $this->assertEquals(23, $nComments);
+
+        // check firstComA has four children
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $childComments = Comment::get()->filter('ParentID', $comment->ID);
+        $this->assertEquals(4, $childComments->count());
+        $this->assertEquals(0, $comment->MarkedAsDeleted);
+
+        // spam it
+        $comment->markSpam();
+
+        // should still have same number of comments, only now it will be
+        // marked as spam
+        $nComments = Comment::get()->count();
+        $this->assertEquals(23, $nComments);
+        $this->assertEquals(1, $comment->MarkedAsSpam());
+    }
+
 
     public function testReplyForm() {
         Config::inst()->update('CommentableItem', 'comments', array(
