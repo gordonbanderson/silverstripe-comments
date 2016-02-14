@@ -33,6 +33,7 @@ class Comment extends DataObject {
 		'BaseClass' => 'Varchar(200)',
 		'Moderated' => 'Boolean(0)',
 		'IsSpam' => 'Boolean(0)',
+        'MarkedAsDeleted' => 'Boolean(0)',
 		'ParentID' => 'Int',
 		'AllowHtml' => 'Boolean',
 		'SecretToken' => 'Varchar(255)',
@@ -53,6 +54,7 @@ class Comment extends DataObject {
 	private static $defaults = array(
 		'Moderated' => 0,
 		'IsSpam' => 0,
+        'MarkedAsDeleted' => 0
 	);
 
 	private static $casting = array(
@@ -101,14 +103,25 @@ class Comment extends DataObject {
 		$this->updateDepth();
 	}
 
-	public function onBeforeDelete() {
-		parent::onBeforeDelete();
+    public function delete() {
+        if (!$this->MarkedAsDeleted && $this->hasChildren()) {
+            $this->MarkedAsDeleted = 1;
+            $this->write();
+        }
 
-		// Delete all children
-		foreach($this->ChildComments() as $comment) {
-			$comment->delete();
-		}
-	}
+        if (!$this->MarkedAsDeleted) {
+            parent::delete();
+        }
+    }
+
+    /**
+     * Check if child comments exist or not
+     * @return boolean true iff the comment has child comments
+     */
+    public function hasChildren() {
+        $nChildren = Comment::get()->filter('ParentCommentID', $this->ID)->count();
+        return $nChildren > 0;
+    }
 
 	/**
 	 * @return Comment_SecurityToken
@@ -272,6 +285,14 @@ class Comment extends DataObject {
 	public function isPreview() {
 		return !$this->exists();
 	}
+
+    /**
+     * Check whether a comment is spam and has children
+     * @return  boolean true iff the comment is spam and has children
+     */
+    public function MarkedAsSpam() {
+        return $this->IsSpam && $this->hasChildren();
+    }
 
 	/**
 	 * @todo needs to compare to the new {@link Commenting} configuration API
@@ -666,7 +687,7 @@ class Comment extends DataObject {
 
 		// Check if depth is limited
 		$maxLevel = $this->getOption('nested_depth');
-		return !$maxLevel || $this->Depth < $maxLevel;
+		return !$this->MarkedAsDeleted && (!$maxLevel || $this->Depth < $maxLevel);
 	}
 
 	/**
