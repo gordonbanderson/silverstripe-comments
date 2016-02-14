@@ -19,7 +19,13 @@
         <% if $JavaScriptEnabled %>
             <a class="comment-reply-link btn" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
         <% else %>
-            <a class="comment-reply-link btn" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
+            <a class="comment-reply-link btn" href="#{$ReplyForm.FormName}" data-toggle-text="<% _t('CommentsInterface_singlecomment_ss.CANCEL_REPLY','Cancel Reply') %>"><% _t('CommentsInterface_singlecomment_ss.REPLY_TO','Reply to') %>&nbsp;$AuthorName.XML</a>
+        <% else %>
+            <% if $ShowReplyToForm %>
+                <a class="comment-reply-link btn" href="{$Parent.Link}#comment-$ID"><% _t('CommentsInterface_singlecomment_ss.CANCEL_REPLY','Cancel Reply') %></a>
+            <% else %>
+                <a class="comment-reply-link btn" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID"><% _t('CommentsInterface_singlecomment_ss.REPLY_TO','Reply to') %>&nbsp;$AuthorName.XML</a>
+            <% end_if %>
         <% end_if %>
         </div>
         <% include CommentReplyForm %>
