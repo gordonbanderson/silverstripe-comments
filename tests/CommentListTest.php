@@ -68,10 +68,6 @@ class CommentListTest extends FunctionalTest {
         $firstComment = $this->objFromFixture('Comment', 'firstComA');
         $comments = $item->Comments();//->sort('Created');
 
-        foreach ($comments as $comment) {
-            error_log($comment->ID . ' ' . $comment->Created .' ' . $comment->Comment);
-        }
-
         $this->assertEquals(4, $comments->count());
         $newComment = new Comment();
         $newComment->Name = 'Fred Bloggs';
