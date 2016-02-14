@@ -34,6 +34,8 @@ class Comment extends DataObject {
 		'Moderated' => 'Boolean(0)',
 		'IsSpam' => 'Boolean(0)',
         'MarkedAsDeleted' => 'Boolean(0)',
+        // cached version of IsSpam && hasChildren()
+        'MarkedAsSpam' => 'Boolean(0)',
 		'ParentID' => 'Int',
 		'AllowHtml' => 'Boolean',
 		'SecretToken' => 'Varchar(255)',
@@ -54,7 +56,8 @@ class Comment extends DataObject {
 	private static $defaults = array(
 		'Moderated' => 0,
 		'IsSpam' => 0,
-        'MarkedAsDeleted' => 0
+        'MarkedAsDeleted' => 0,
+        'MarkedAsSpam' => 0
 	);
 
 	private static $casting = array(
@@ -101,16 +104,47 @@ class Comment extends DataObject {
 
 		// Check comment depth
 		$this->updateDepth();
+
+        // if is spam and has children, set marked as spammed flag
+        if ($this->IsSpam && $this->hasChildren()) {
+            $this->MarkedAsSpam = 1;
+        }
+
+        // Check if the parent needs updating
+        $pc = $this->ParentComment();
+        if (!empty($pc) && $pc->IsSpam) { // no need to check children as this is a child
+            $pc->MarkedAsSpam = 1;
+            $pc->write();
+        }
 	}
 
     public function delete() {
+        // if the deleted comment has children mark it as deleted but do not delete it
         if (!$this->MarkedAsDeleted && $this->hasChildren()) {
             $this->MarkedAsDeleted = 1;
             $this->write();
         }
 
+        // If the comment is not marked as deleted, actually delete it (it's a leaf)
         if (!$this->MarkedAsDeleted) {
+            $parentComment = $this->ParentComment();
             parent::delete();
+
+            // If a parent comment was marked as deleted and it no longer has
+            // children, delete it
+            if ($parentComment && $parentComment->MarkedAsDeleted  &&
+                !$parentComment->hasChildren()) {
+                $parentComment->delete();
+            }
+
+            // If a parent comment was marked as spam and it no longer has
+            // children, unmark it
+            if ($parentComment && $parentComment->MarkedAsSpam  &&
+                !$parentComment->hasChildren()) {
+                $parentComment->MarkedAsSpam = 0;
+                $parentComment->write();
+            }
+
         }
     }
 
@@ -285,14 +319,6 @@ class Comment extends DataObject {
 	public function isPreview() {
 		return !$this->exists();
 	}
-
-    /**
-     * Check whether a comment is spam and has children
-     * @return  boolean true iff the comment is spam and has children
-     */
-    public function MarkedAsSpam() {
-        return $this->IsSpam && $this->hasChildren();
-    }
 
 	/**
 	 * @todo needs to compare to the new {@link Commenting} configuration API
