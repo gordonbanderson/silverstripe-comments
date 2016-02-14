@@ -115,7 +115,6 @@ class CommentsGridFieldActionTest extends SapphireTest {
         $this->assertEquals(1, $record->Moderated);
         $this->assertEquals(1, $record->IsSpam);
 
-//getStatusDescription
         $result = $action->handleAction($this->gridField, 'approve', $arguments, $data );
         $this->assertEquals(200, Controller::curr()->getResponse()->getStatusCode());
         $this->assertEquals(
@@ -126,8 +125,6 @@ class CommentsGridFieldActionTest extends SapphireTest {
         $record = DataObject::get_by_id('Comment', $recordID);
         $this->assertEquals(1, $record->Moderated);
         $this->assertEquals(0, $record->IsSpam);
-
-        error_log(Controller::curr()->getResponse()->getStatusCode());
 	}
 
 }
