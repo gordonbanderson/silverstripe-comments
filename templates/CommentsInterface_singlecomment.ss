@@ -13,7 +13,7 @@
         <span class="date">$Created.Nice <% if $JavaScriptEnabled %><time class="timeago" datetime="$Created.format(c)">$Created.Nice</time><% end_if %></span>
     </p>
 <% end_if %>
-	<p>$EscapedComment</p>
+	<div class="commentContent">$EscapedComment</div>
     <% if $RepliesEnabled %>
         <div class="replyButtonContainer">
         <% if $JavaScriptEnabled %>
@@ -22,31 +22,31 @@
             <a class="comment-reply-link btn" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
         <% end_if %>
         </div>
-
         <% include CommentReplyForm %>
     <% end_if %>
 </div>
 
 <% if not $isPreview %>
-	<% if $ApproveLink || $SpamLink || $HamLink || $DeleteLink || $RepliesEnabled %>
-		<div class="comment-action-links">
-			<div class="comment-moderation-options">
-				<% if $ApproveLink %>
-					<a href="$ApproveLink.ATT" class="approve btn"><% _t('CommentsInterface_singlecomment_ss.APPROVE', 'approve it') %></a>
-				<% end_if %>
-				<% if $SpamLink %>
-					<a href="$SpamLink.ATT" class="spam btn"><% _t('CommentsInterface_singlecomment_ss.ISSPAM','spam it') %></a>
-				<% end_if %>
-				<% if $HamLink %>
-					<a href="$HamLink.ATT" class="ham btn"><% _t('CommentsInterface_singlecomment_ss.ISNTSPAM','not spam') %></a>
-				<% end_if %>
-				<% if $DeleteLink %>
-					<a href="$DeleteLink.ATT" class="delete btn"><% _t('CommentsInterface_singlecomment_ss.REMCOM','reject it') %></a>
-				<% end_if %>
-			</div>
-
-		</div>
-	<% end_if %>
+   <% if $ApproveLink || $SpamLink || $HamLink || $DeleteLink || $RepliesEnabled %>
+<% end_if %>
 </div>
-	<% include CommentReplies %>
+
+<div class="comment-action-links">
+    <div class="comment-moderation-options">
+        <% if $ApproveLink %>
+            <a href="$ApproveLink.ATT" class="approve btn"><% _t('CommentsInterface_singlecomment_ss.APPROVE', 'approve it') %></a>
+        <% end_if %>
+        <% if $SpamLink %>
+            <a href="$SpamLink.ATT" class="spam btn"><% _t('CommentsInterface_singlecomment_ss.ISSPAM','spam it') %></a>
+        <% end_if %>
+        <% if $HamLink %>
+            <a href="$HamLink.ATT" class="ham btn"><% _t('CommentsInterface_singlecomment_ss.ISNTSPAM','not spam') %></a>
+        <% end_if %>
+        <% if $DeleteLink %>
+            <a href="$DeleteLink.ATT" class="delete btn"><% _t('CommentsInterface_singlecomment_ss.REMCOM','reject it') %></a>
+        <% end_if %>
+    </div>
+</div>
+
+<% include CommentReplies %>
 <% end_if %>

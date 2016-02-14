@@ -85,8 +85,7 @@ $levelIndentation: 20px;
 
 .commentWrapper {
     background: #f7f7f7;
-            border: 1px solid #ddd;
-
+    border: 1px solid #ddd;
 }
 
 // A published comment
@@ -121,7 +120,7 @@ $levelIndentation: 20px;
     img.gravatar {
         float: left;
         margin: 20px 0 20px 20px;
-        border: none;
+        border: solid #999 1px;
     }
 
 	.comment-text {
@@ -136,6 +135,7 @@ $levelIndentation: 20px;
 		//white-space: pre-wrap;
 		//white-space: pre-line;
 		//word-wrap: break-word;
+        position: relative;
 
 		p:last-child {
 			margin-bottom: 0;
@@ -147,15 +147,30 @@ $levelIndentation: 20px;
         padding: 20px 20px 20px 120px;
 
         // Ensure there is enough vertical space for the Gravatar
-        // min-height: 130px;
+        // 80px default image size + 2x20px vertical padding
+        //min-height: 120px;
+    }
+
+    .comment-text .commentContent {
+        padding-bottom: 40px;
     }
 
     .comment-text .replyButtonContainer {
-        padding-bottom: 20px;
+        padding-bottom: 0px;
+        margin: 0px;
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+
+
+        a {
+            float: none;
+            margin: 0px;
+        }
     }
 
     .comment-text .comment-reply-link {
-        float: right;
+        float: none;
     }
 
 	.date {
@@ -182,15 +197,17 @@ $levelIndentation: 20px;
 		//padding: 2.5em 1em 1em;
 	}
 
+    .comment-reply-form-holder {
+        padding: 0 10px 100px 10px;
+    }
+
 	.comment-replies-container {
 		clear: both;
 		padding-left: $levelIndentation;
 		margin: 0px 0 0 0;
 		//border-left: 1px dashed #999;
 
-		.comment-reply-form-holder {
-			padding: 0 10px; // Prevent clipping issues on slideUp/Down
-		}
+
 		.comment-replies-holder {
 			padding: 0 0 0 10px;
 		}
@@ -206,11 +223,12 @@ $levelIndentation: 20px;
 }
 
 .comment-moderation-options {
-	float: left;
+	float: none;
 }
 
 .comment-action-links {
-	margin: 20px 0 10px;
+	margin: 0px;
+    clear: both;
 
 	a:not(:last-child) {
 		margin-right: 12px;

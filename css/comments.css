@@ -92,12 +92,13 @@
 .comment img.gravatar {
   float: left;
   margin: 20px 0 20px 20px;
-  border: none;
+  border: solid #999 1px;
 }
 .comment .comment-text {
   box-shadow: none;
   margin: 0;
   padding: 0 20px 0 20px;
+  position: relative;
 }
 .comment .comment-text p:last-child {
   margin-bottom: 0;
@@ -105,11 +106,22 @@
 .comment .comment-text.hasGravatar {
   padding: 20px 20px 20px 120px;
 }
+.comment .comment-text .commentContent {
+  padding-bottom: 40px;
+}
 .comment .comment-text .replyButtonContainer {
-  padding-bottom: 20px;
+  padding-bottom: 0px;
+  margin: 0px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+.comment .comment-text .replyButtonContainer a {
+  float: none;
+  margin: 0px;
 }
 .comment .comment-text .comment-reply-link {
-  float: right;
+  float: none;
 }
 .comment .date {
   font-size: 16px;
@@ -124,13 +136,13 @@
 .comment .info {
   margin-bottom: 10px;
 }
+.comment .comment-reply-form-holder {
+  padding: 0 10px 100px 10px;
+}
 .comment .comment-replies-container {
   clear: both;
   padding-left: 20px;
   margin: 0px 0 0 0;
-}
-.comment .comment-replies-container .comment-reply-form-holder {
-  padding: 0 10px;
 }
 .comment .comment-replies-container .comment-replies-holder {
   padding: 0 0 0 10px;
@@ -145,11 +157,12 @@
 }
 
 .comment-moderation-options {
-  float: left;
+  float: none;
 }
 
 .comment-action-links {
-  margin: 20px 0 10px;
+  margin: 0px;
+  clear: both;
 }
 .comment-action-links a:not(:last-child) {
   margin-right: 12px;
