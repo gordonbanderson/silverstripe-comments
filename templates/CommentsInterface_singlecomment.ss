@@ -13,11 +13,27 @@
 <% end_if %>
 
 <div class="comment-text" id="<% if $isPreview %>comment-preview<% end_if %>">
-	<p>$EscapedComment</p>
+    <% if $MarkedAsDeleted %>
+        <div class="commentStatus">
+        <% _t('CommentsInterface_singlecomment_ss.DELETED_BY_ADMIN','This content was deleted by an administrator') %>
+        </div>
+    <% else_if $MarkedAsSpam %>
+    <div class="commentStatus">
+        <% if $SpamLink %>
+            <p>$EscapedComment</p>
+        <% else %>
+            <% _t('CommentsInterface_singlecomment_ss.SPAMMED_BY_ADMIN','This content was marked as spam by an administrator') %>
+        <% end_if %>
+        </div>
+    <% else %>
+        <p>$EscapedComment</p>
+    <% end_if %>
+
 </div>
 
 <% if not $isPreview %>
 	<% if $ApproveLink || $SpamLink || $HamLink || $DeleteLink || $RepliesEnabled %>
+        <% if not $MarkedAsDeleted %>
 		<div class="comment-action-links">
 			<div class="comment-moderation-options">
 				<% if $ApproveLink %>
@@ -37,6 +53,7 @@
 				<a class="comment-reply-link" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
 			<% end_if %>
 		</div>
+        <% end_if %>
 	<% end_if %>
 
 	<% include CommentReplies %>
