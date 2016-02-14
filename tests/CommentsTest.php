@@ -545,9 +545,11 @@ class CommentsTest extends FunctionalTest {
         $reloadedParent = DataObject::get_by_id('Comment', $commentID);
         $this->assertEquals(1, $reloadedParent->MarkedAsDeleted);
 
+        $reloadedChild = DataObject::get_by_id('Comment', $childCommentID);
+
         // assert that the new child not been deleted as parent exists
         $this->assertFalse(empty($reloadedParent));
-        $this->assertFalse(empty(DataObject::get_by_id('Comment', $childCommentID)));
+        $this->assertFalse(empty($reloadedChild));
     }
 
     public function testRequireDefaultRecords() {
