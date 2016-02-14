@@ -61,6 +61,8 @@ en:
     ISSPAM: 'spam it'
     PBY: 'Posted by'
     REMCOM: 'reject it'
+    DELETED_BY_ADMIN: 'This comment was deleted by an administrator'
+    SPAMMED_BY_ADMIN: 'This comment was marked as spam by an administrator'
   CommentsInterface_ss:
     AWAITINGMODERATION: 'Your comment has been submitted and is now awaiting moderation.'
     COMMENTLOGINERROR: 'You cannot post comments until you have logged in'
