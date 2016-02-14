@@ -525,7 +525,8 @@ class CommentsTest extends FunctionalTest {
 	}
 
     /*
-    When a parent comment is deleted, remove the children
+    When a parent comment is deleted, and it has children do not delete it,
+    instead set a flag MarkedAsSpam
      */
     public function testOnBeforeDelete() {
         $comment = $this->objFromFixture('Comment', 'firstComA');
@@ -590,6 +591,7 @@ class CommentsTest extends FunctionalTest {
             'Moderated' => 'Modéré?',
             'IsSpam' => 'Spam?',
             'MarkedAsDeleted' => 'Marked As Deleted',
+            'MarkedAsSpam' => 'Marked As Spam',
             'ParentID' => 'Parent ID',
             'AllowHtml' => 'Allow Html',
             'SecretToken' => 'Secret Token',
@@ -612,6 +614,7 @@ class CommentsTest extends FunctionalTest {
             'Moderated' => 'Moderated?',
             'IsSpam' => 'Spam?',
             'MarkedAsDeleted' => 'Marked As Deleted',
+            'MarkedAsSpam' => 'Marked As Spam',
             'ParentID' => 'Parent ID',
             'AllowHtml' => 'Allow Html',
             'SecretToken' => 'Secret Token',
@@ -1112,6 +1115,54 @@ class CommentsTest extends FunctionalTest {
 
     }
 
+    public function testMarkAsSpamWithChildren() {
+        $comment = $this->objFromFixture('Comment', 'firstComA');
+        $comment->markSpam();
+        $this->assertEquals(1, $comment->MarkedAsSpam);
+    }
+
+    /*
+    The web interface does not present this possibility but it should be taken
+    into account
+     */
+    public function testAddAndDeleteChildToFromSpam() {
+        // grab a leaf
+        $comment = $this->objFromFixture('Comment', 'thirdComD');
+        $comment->markSpam();
+        $this->assertEquals(0, $comment->MarkedAsSpam);
+
+        $child = new Comment();
+        $child->Name = 'Fred Bloggs';
+        $child->Comment = 'Child of thirdComD';
+        $child->write();
+
+        $comment->ChildComments()->add($child);
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+        $this->assertEquals(1, $comment->MarkedAsSpam);
+
+        $child2 = new Comment();
+        $child2->Name = 'Fred Bloggs 2';
+        $child2->Comment = '2nd child of thirdComD';
+        $child2->write();
+
+        $comment->ChildComments()->add($child);
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+        $this->assertEquals(1, $comment->MarkedAsSpam);
+
+        $child2->delete();
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+        $child2 = DataObject::get_by_id('Comment', $child2->ID);
+        $this->assertFalse($child2);
+        $this->assertEquals(1, $comment->MarkedAsSpam);
+
+        $child->delete();
+        $comment = DataObject::get_by_id('Comment', $comment->ID);
+        $child = DataObject::get_by_id('Comment', $child->ID);
+        $this->assertFalse($child);
+        $this->assertFalse($comment->hasChildren());
+        $this->assertEquals(0, $comment->MarkedAsSpam);
+    }
+
     public function testDeleteWithChildren() {
         // assert the number of comments
         $this->assertEquals(23, Comment::get()->count());
@@ -1155,7 +1206,7 @@ class CommentsTest extends FunctionalTest {
         // marked as spam
         $nComments = Comment::get()->count();
         $this->assertEquals(23, $nComments);
-        $this->assertEquals(1, $comment->MarkedAsSpam());
+        $this->assertEquals(1, $comment->MarkedAsSpam);
     }
 
 
