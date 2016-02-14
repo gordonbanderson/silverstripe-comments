@@ -27,26 +27,31 @@
 </div>
 
 <% if not $isPreview %>
-   <% if $ApproveLink || $SpamLink || $HamLink || $DeleteLink || $RepliesEnabled %>
-<% end_if %>
-</div>
-
-<div class="comment-action-links">
-    <div class="comment-moderation-options">
-        <% if $ApproveLink %>
-            <a href="$ApproveLink.ATT" class="approve btn"><% _t('CommentsInterface_singlecomment_ss.APPROVE', 'approve it') %></a>
-        <% end_if %>
-        <% if $SpamLink %>
-            <a href="$SpamLink.ATT" class="spam btn"><% _t('CommentsInterface_singlecomment_ss.ISSPAM','spam it') %></a>
-        <% end_if %>
-        <% if $HamLink %>
-            <a href="$HamLink.ATT" class="ham btn"><% _t('CommentsInterface_singlecomment_ss.ISNTSPAM','not spam') %></a>
-        <% end_if %>
-        <% if $DeleteLink %>
-            <a href="$DeleteLink.ATT" class="delete btn"><% _t('CommentsInterface_singlecomment_ss.REMCOM','reject it') %></a>
-        <% end_if %>
-    </div>
-</div>
+	<% if $ApproveLink || $SpamLink || $HamLink || $DeleteLink || $RepliesEnabled %>
+		<div class="comment-action-links">
+			<div class="comment-moderation-options">
+				<% if $ApproveLink %>
+					<a href="$ApproveLink.ATT" class="approve"><% _t('CommentsInterface_singlecomment_ss.APPROVE', 'approve it') %></a>
+				<% end_if %>
+				<% if $SpamLink %>
+					<a href="$SpamLink.ATT" class="spam"><% _t('CommentsInterface_singlecomment_ss.ISSPAM','spam it') %></a>
+				<% end_if %>
+				<% if $HamLink %>
+					<a href="$HamLink.ATT" class="ham"><% _t('CommentsInterface_singlecomment_ss.ISNTSPAM','not spam') %></a>
+				<% end_if %>
+				<% if $DeleteLink %>
+					<a href="$DeleteLink.ATT" class="delete"><% _t('CommentsInterface_singlecomment_ss.REMCOM','reject it') %></a>
+				<% end_if %>
+			</div>
+			<% if $RepliesEnabled %>
+                <% if $JavaScriptEnabled %>
+                    <a class="comment-reply-link" href="#{$ReplyForm.FormName}" data-toggle-text="<% _t('CommentsInterface_singlecomment_ss.CANCEL_REPLY','CANCEL_REPLY') %>"><% _t('CommentsInterface_singlecomment_ss.REPLY_TO','Reply to') %>&nbsp;$AuthorName.XML</a>
+                <% else %>
+                    <a class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">$ID <% _t('CommentsInterface_singlecomment_ss.REPLY_TO','Reply to') %>&nbsp;$AuthorName.XML</a>
+                <% end_if %>
+			<% end_if %>
+		</div>
+	<% end_if %>
 
 <% include CommentReplies %>
 <% end_if %>
