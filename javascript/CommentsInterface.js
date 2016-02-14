@@ -85,13 +85,17 @@
 					form = $(formID).closest('.comment-reply-form-holder');
 
 				// Prevent focus
-				e.preventDefault();
-				if(form.is(':visible')) {
-					allForms.slideUp();
-				} else {
-					allForms.not(form).slideUp();
-					form.slideDown();
-				}
+                e.preventDefault();
+                link = $(e.target);
+                toggleText = link.attr('data-toggle-text');
+                link.attr('data-toggle-text', link.html());
+                link.html(toggleText);
+                if(form.is(':visible')) {
+                    allForms.slideUp();
+                } else {
+                    allForms.not(form).slideUp();
+                    form.slideDown();
+                }
 			}
 		});
 

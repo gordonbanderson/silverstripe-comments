@@ -34,9 +34,9 @@
 			</div>
 			<% if $RepliesEnabled %>
                 <% if $JavaScriptEnabled %>
-				    <a class="comment-reply-link" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
+                    <a class="comment-reply-link" href="#{$ReplyForm.FormName}" data-toggle-text="<% _t('CommentsInterface_singlecomment_ss.CANCEL_REPLY','CANCEL_REPLY') %>"><% _t('CommentsInterface_singlecomment_ss.REPLY_TO','Reply to') %>&nbsp;$AuthorName.XML</a>
                 <% else %>
-                    <a class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
+                    <a class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">$ID <% _t('CommentsInterface_singlecomment_ss.REPLY_TO','Reply to') %>&nbsp;$AuthorName.XML</a>
                 <% end_if %>
 			<% end_if %>
 		</div>
