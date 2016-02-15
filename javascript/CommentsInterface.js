@@ -80,41 +80,73 @@
 		 */
 		$( ".comment-reply-link" ).entwine({
 			onclick: function( e ) {
+                // Prevent focus
+                e.preventDefault();
 
                 var jqTarget = $(e.target);
                 var commentID = jqTarget.attr('data-comment-id');
                 container = $('#replyFormJS');
 
-                // hide the form if it's visible
-                if(container.is(':visible')) {
+                var state = jqTarget.attr('data-state');
+
+                // Show possibly hidden reply form, alter state so that it works
+                // in context of relevant comment
+                if (state != 'replying') {
+                    cancelTheCancels();
+                    toggleText = jqTarget.attr('data-toggle-text');
+                    jqTarget.attr('data-toggle-text', jqTarget.html());
+                    jqTarget.attr('data-state', 'replying');
+                    jqTarget.html(toggleText);
+
+                    // hide the form if it's visible
+                    if(container.is(':visible')) {
+                        container.toggle();
+                    }
+
+                    var jqComment = $('#reply-form-container-' + commentID);
+                    var inputParemtCommentID = container.find("input[name='ParentCommentID']");
+                    var inputComment = container.find("input[name='Comment']");
+                    inputParemtCommentID.attr('value', commentID);
+                    inputComment.attr('value', '');
+                    container.detach().appendTo(jqComment);
+
+                    var allForms = $( ".comment-reply-form-holder" ),
+                        formID = $( this ).prop('href').replace(/^[^#]*#/, '#'),
+                        form = $(formID).closest('.comment-reply-form-holder');
+
+                    // Show the form
                     container.toggle();
-                }
 
-                var jqComment = $('#reply-form-container-' + commentID);
-                var inputParemtCommentID = container.find("input[name='ParentCommentID']");
-                var inputComment = container.find("input[name='Comment']");
-                inputParemtCommentID.attr('value', commentID);
-                inputComment.attr('value', '');
-                console.log(container);
-                container.detach().appendTo(jqComment);
-                console.log('show form');
-
-				var allForms = $( ".comment-reply-form-holder" ),
-					formID = $( this ).prop('href').replace(/^[^#]*#/, '#'),
-					form = $(formID).closest('.comment-reply-form-holder');
-
-				// Prevent focus
-				e.preventDefault();
-
-                // Show the form
-                container.toggle();
-
-                $('html, body').animate({
+                    $('html, body').animate({
                         scrollTop: container.offset().top - 30
                     }, 200);
 
+                } else {
+                    // Cancel reply, hide form, change button text
+                    toggleButtonText(jqTarget);
+                    container.slideUp();
+                }
 			}
 		});
+
+        /**
+         * Revert buttons in a state of replying to that of cancelled, changing
+         * text back to 'Reply to <person>'
+         */
+        function toggleButtonText(node) {
+            toggleText = node.attr('data-toggle-text');
+            node.attr('data-toggle-text', node.html());
+            node.attr('data-state', 'cancelled');
+            node.html(toggleText);
+        }
+
+        function cancelTheCancels() {
+            var toFix = $("a[data-state='replying']");
+            toFix.each(function(index) {
+                var jqTarget = $(this);
+                toggleButtonText(jqTarget);
+            });
+        }
 
 
 		/**
