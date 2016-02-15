@@ -1,10 +1,8 @@
 <% if $RepliesEnabled %>
 	<div class="comment-replies-container">
 		<div class="comment-reply-form-holder">
-            <% if $JavaScriptEnabled %>$ReplyForm<% else %>
             <%-- non ajax, only show if replyTo is set --%>
             <% if $ShowReplyToForm %>$ReplyForm<% end_if %>
-            <% end_if %>
 		</div>
 
 		<div class="comment-replies-holder">

@@ -34,14 +34,12 @@
 				<% end_if %>
 			</div>
 			<% if $RepliesEnabled %>
-                <% if $JavaScriptEnabled %>
-				    <a class="comment-reply-link" href="#{$ReplyForm.FormName}">Reply to $AuthorName.XML</a>
-                <% else %>
-                    <a class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
-                <% end_if %>
+                    <a data-comment-id="$ID" class="comment-reply-link" href="$Parent.Link?replyTo=$ID#Form_ReplyForm_$ID">Reply to $AuthorName.XML</a>
 			<% end_if %>
 		</div>
 	<% end_if %>
+
+    <div class="comment-replies-container" id="reply-form-container-$ID"></div>
 
 	<% include CommentReplies %>
 <% end_if %>

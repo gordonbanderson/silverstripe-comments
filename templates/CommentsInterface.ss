@@ -3,7 +3,7 @@
 <% if $CommentsEnabled %>
 	<div id="$CommentHolderID" class="comments-holder-container">
 		<h4><% _t('CommentsInterface_ss.POSTCOM','Post your comment') %></h4>
-		
+
 		<% if $AddCommentForm %>
 			<% if $canPostComment %>
 				<% if $ModeratedSubmitted %>
@@ -11,20 +11,22 @@
 				<% end_if %>
 				$AddCommentForm
 			<% else %>
-				<p><% _t('CommentsInterface_ss.COMMENTLOGINERROR', 'You cannot post comments until you have logged in') %><% if $PostingRequiredPermission %>,<% _t('CommentsInterface_ss.COMMENTPERMISSIONERROR', 'and that you have an appropriate permission level') %><% end_if %>. 
+				<p><% _t('CommentsInterface_ss.COMMENTLOGINERROR', 'You cannot post comments until you have logged in') %><% if $PostingRequiredPermission %>,<% _t('CommentsInterface_ss.COMMENTPERMISSIONERROR', 'and that you have an appropriate permission level') %><% end_if %>.
 					<a href="Security/login?BackURL={$Parent.Link}" title="<% _t('CommentsInterface_ss.LOGINTOPOSTCOMMENT', 'Login to post a comment') %>"><% _t('CommentsInterface_ss.COMMENTPOSTLOGIN', 'Login Here') %></a>.
 				</p>
 			<% end_if %>
 		<% else %>
-			<p><% _t('CommentsInterface_ss.COMMENTSDISABLED', 'Posting comments has been disabled') %>.</p>	
+			<p><% _t('CommentsInterface_ss.COMMENTSDISABLED', 'Posting comments has been disabled') %>.</p>
 		<% end_if %>
 
 		<h4><% _t('CommentsInterface_ss.COMMENTS','Comments') %></h4>
-	
+
 		<div class="comments-holder">
 			<% if $PagedComments %>
 				<ul class="comments-list root-level">
 					<% loop $PagedComments %>
+                        <%-- include a hidden form for JS use when replying --%>
+                        <% if $First %><div id="replyFormJS" style="display:none;">$ReplyForm</div><% end_if %>
 						<li class="comment $EvenOdd<% if FirstLast %> $FirstLast <% end_if %> $SpamClass">
 							<% include CommentsInterface_singlecomment %>
 						</li>
@@ -38,7 +40,7 @@
 			<p class="no-comments-yet"<% if $PagedComments.Count %> style='display: none' <% end_if %> ><% _t('CommentsInterface_ss.NOCOMMENTSYET','No one has commented on this page yet.') %></p>
 
 		</div>
-		
+
 		<% if $DeleteAllLink %>
 			<p class="delete-comments">
 				<a href="$DeleteAllLink"><% _t('CommentsInterface_ss.DELETEALLCOMMENTS','Delete all comments on this page') %></a>
@@ -46,7 +48,7 @@
 		<% end_if %>
 
 		<p class="commenting-rss-feed">
-			<a href="$CommentRSSLinkPage"><% _t('CommentsInterface_ss.RSSFEEDCOMMENTS', 'RSS feed for comments on this page') %></a> | 
+			<a href="$CommentRSSLinkPage"><% _t('CommentsInterface_ss.RSSFEEDCOMMENTS', 'RSS feed for comments on this page') %></a> |
 			<a href="$CommentRSSLink"><% _t('CommentsInterface_ss.RSSFEEDALLCOMMENTS', 'RSS feed for all comments') %></a>
 		</p>
 	</div>

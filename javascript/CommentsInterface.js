@@ -9,7 +9,7 @@
 		 */
 		$('.comments-holder-container form').entwine({
 			onmatch: function() {
-				
+
 				// @todo Reinstate preview-comment functionality
 
 				/**
@@ -56,7 +56,7 @@
 				this._super();
 			}
 		});
-		
+
 		/**
 		 * Comment reply form
 		 */
@@ -66,7 +66,7 @@
 				var selectedHash = window.document.location.hash.substr(1),
 					form = $(this).children('.reply-form');
 				if( !selectedHash || selectedHash !== form.prop( 'id' ) ) {
-					this.hide();
+					//this.hide();
 				}
 				this._super();
 			},
@@ -74,27 +74,48 @@
 				this._super();
 			}
 		});
-			
+
 		/**
 		 * Toggle on/off reply form
 		 */
 		$( ".comment-reply-link" ).entwine({
 			onclick: function( e ) {
+
+                var jqTarget = $(e.target);
+                var commentID = jqTarget.attr('data-comment-id');
+                container = $('#replyFormJS');
+
+                // hide the form if it's visible
+                if(container.is(':visible')) {
+                    container.toggle();
+                }
+
+                var jqComment = $('#reply-form-container-' + commentID);
+                var inputParemtCommentID = container.find("input[name='ParentCommentID']");
+                var inputComment = container.find("input[name='Comment']");
+                inputParemtCommentID.attr('value', commentID);
+                inputComment.attr('value', '');
+                console.log(container);
+                container.detach().appendTo(jqComment);
+                console.log('show form');
+
 				var allForms = $( ".comment-reply-form-holder" ),
 					formID = $( this ).prop('href').replace(/^[^#]*#/, '#'),
 					form = $(formID).closest('.comment-reply-form-holder');
-				
+
 				// Prevent focus
 				e.preventDefault();
-				if(form.is(':visible')) {
-					allForms.slideUp();
-				} else {
-					allForms.not(form).slideUp();
-					form.slideDown();
-				}
+
+                // Show the form
+                container.toggle();
+
+                $('html, body').animate({
+                        scrollTop: container.offset().top - 30
+                    }, 200);
+
 			}
 		});
-		
+
 
 		/**
 		 * Preview comment by fetching it from the server via ajax.
@@ -132,7 +153,7 @@
 		$(':input', form).on('change keydown', function() {
 		   previewEl.removeClass('loading').hide();
 		});*/
-		
+
 		/**
 		 * Clicking one of the metalinks performs the operation via ajax
 		 * this inclues the spam and approve links
@@ -141,7 +162,7 @@
 		commentsList.on('click', '.action-links a', function(e) {
 			var link = $(this);
 			var comment = link.parents('.comment:first');
-			
+
 			$.ajax({
 				url: $(this).attr('href'),
 				cache: false,
@@ -159,7 +180,7 @@
 					else if(link.hasClass('delete')) {
 						comment.fadeOut(1000, function() {
 							comment.remove();
-									
+
 							if(commentsList.children().length == 0) {
 								noCommentsYet.show();
 							}
@@ -173,7 +194,7 @@
 					alert(html)
 				}
 			});
-			
+
 			e.preventDefault();
 		});
 		*/
