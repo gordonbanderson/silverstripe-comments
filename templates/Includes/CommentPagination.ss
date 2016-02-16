@@ -5,11 +5,15 @@
 				<a href="$PrevLink.ATT" class="previous">&laquo; <% _t('CommentsInterface_ss.PREV','previous') %></a>
 			<% end_if %>
 
-			<% if $Pages %><% loop $Pages %>
+			<% if $Pages %><% loop $PaginationSummary %>
 				<% if $CurrentBool %>
 					<strong>$PageNum</strong>
 				<% else %>
-					<a href="$Link.ATT">$PageNum</a>
+                    <% if Link %>
+                       <a href="$Link">$PageNum</a>
+                    <% else %>
+                       &#8230;
+                    <% end_if %>
 				<% end_if %>
 			<% end_loop %><% end_if %>
 
