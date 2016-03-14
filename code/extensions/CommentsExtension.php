@@ -85,7 +85,9 @@ class CommentsExtension extends DataExtension {
 		if(isset($defaults['ProvideComments'])) {
 			$this->owner->ProvideComments = $defaults['ProvideComments'];
 		} else {
-			$this->owner->ProvideComments = $this->owner->getCommentsOption('enabled') ? 1 : 0;
+            #FIXME - cannot seem to turn auto on with this
+            $this->owner->ProvideComments = $this->owner->getCommentsOption('enabled') ? 1 : 0;
+            $this->owner->ProvideComments = false;
 		}
 
 		// If moderation options should be configurable via the CMS then
