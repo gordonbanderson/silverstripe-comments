@@ -455,8 +455,9 @@ class CommentsExtension extends DataExtension
             Requirements::javascript(THIRDPARTY_DIR.'/jquery-entwine/dist/jquery.entwine-dist.js');
             Requirements::javascript(THIRDPARTY_DIR.'/jquery-validate/lib/jquery.form.js');
             Requirements::javascript(COMMENTS_THIRDPARTY.'/jquery-validate/jquery.validate.min.js');
-            Requirements::javascript('comments/javascript/CommentsInterface.js');
+            Requirements::add_i18n_javascript('comments/javascript/lang');
             Requirements::javascript('comments/javascript/jquery.timeago.js');
+            Requirements::javascript('comments/javascript/CommentsInterface.js');
 
             // Use current locale or fall back to English
             $locale = substr(i18n::default_locale(), 0, 2);
